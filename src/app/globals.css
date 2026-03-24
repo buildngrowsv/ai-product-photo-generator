@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+/**
+ * globals.css — PhotoForge AI global styles
+ *
+ * DESIGN SYSTEM (2026-03-24, Builder 2):
+ * Dark-first theme with indigo/violet accent gradient.
+ * Matches the premium AI tool aesthetic that converts well in the
+ * product photography niche — competitors use light themes, so
+ * dark theme is a differentiator that signals "pro tool".
+ */
+
+:root {
+  --background: #030712;
+  --foreground: #f9fafb;
+  --accent-from: #6366f1;
+  --accent-to: #8b5cf6;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+/**
+ * Gradient text utility — used for hero headings and CTAs.
+ * The indigo-to-violet gradient is the brand signature.
+ */
+.gradient-text {
+  background: linear-gradient(135deg, var(--accent-from) 0%, var(--accent-to) 50%, #ec4899 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/**
+ * Glow effect for the upload dropzone and CTA buttons.
+ * Creates a subtle halo that draws attention to interactive elements.
+ */
+.glow-border {
+  box-shadow: 0 0 20px rgba(99, 102, 241, 0.15), 0 0 40px rgba(139, 92, 246, 0.1);
+}
+
+.glow-border:hover {
+  box-shadow: 0 0 30px rgba(99, 102, 241, 0.25), 0 0 60px rgba(139, 92, 246, 0.15);
+}
