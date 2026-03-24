@@ -1,0 +1,57 @@
+##
+# ci.yml — Continuous Integration for PhotoForge AI (ai-product-photo-generator)
+#
+# WHAT THIS DOES:
+# On every push to main and every pull request, this workflow:
+#   1. Installs dependencies
+#   2. Runs TypeScript type-check (catches import errors, type mismatches)
+#   3. Runs the Vitest unit/integration test suite
+#   4. Runs `next build` to ensure the production build never breaks
+#
+# WHY CI (not just local testing):
+# Per deploy-readiness-checklist.md: "Add CI/CD that runs build on every push."
+# Local builds work but CI catches issues on fresh environments where env vars
+# are absent — the exact condition of Vercel's build environment.
+#
+# ENVIRONMENT:
+# No real API keys are provided in CI. Tests are written to handle missing
+# FAL_KEY/STRIPE_SECRET_KEY gracefully so they pass in this environment.
+#
+# BADGE (add to README):
+# ![CI](https://github.com/buildngrowsv/ai-product-photo-generator/actions/workflows/ci.yml/badge.svg)
+##
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: TypeScript type check
+        run: npx tsc --noEmit
+
+      - name: Run unit tests
+        run: npm test
+
+      - name: Production build
+        run: npm run build
