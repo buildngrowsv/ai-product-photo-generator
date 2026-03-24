@@ -1,0 +1,8 @@
+{
+  "installCommand": "npm install --legacy-peer-deps",
+  "functions": {
+    "src/app/api/generate/route.ts": {
+      "maxDuration": 60
+    }
+  }
+}

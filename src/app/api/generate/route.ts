@@ -5,17 +5,29 @@
  * photography with AI backgrounds. This is the HOSTED solution — our API key,
  * our backend, metered for billing. Users never see or need an API key.
  *
- * ARCHITECTURE (2026-03-24, Builder 2, BridgeSwarm pane1774):
+ * ARCHITECTURE (2026-03-24, Builder 6, BridgeSwarm pane1774):
  * - Client uploads product image as base64 + selects a style preset
  * - This route receives the base64 image + style prompt
- * - Calls fal.ai's image generation model (FLUX or similar) with the prompt
- * - Returns the generated image as base64 to the client
+ * - Calls fal.ai's FLUX image-to-image model with the prompt
+ * - Returns the generated image CDN URL to the client
+ *
+ * BUG FIX HISTORY (2026-03-24, Builder 6):
+ * The original implementation used raw fetch() to https://queue.fal.run/...
+ * This is fal.ai's ASYNC QUEUE endpoint — it returns {request_id, response_url}
+ * immediately and requires polling to get the actual result. The code was then
+ * reading falResult.images[0].url which was ALWAYS undefined because the queue
+ * endpoint never returns images directly. Every request would fail with "No image
+ * generated" even if fal.ai was perfectly healthy.
+ *
+ * FIX: Use @fal-ai/client SDK with fal.subscribe() which handles queue polling
+ * internally and resolves when the inference is actually complete. The SDK
+ * abstracts queue vs sync distinction entirely — you just await the result.
  *
  * HOSTED MODEL (operator directive 2026-03-24):
  * All products must convert from BYOK to hosted backend proxy. This route
  * uses OUR fal.ai key (FAL_KEY env var on Vercel) so users don't need their own.
  * Usage is metered via a simple counter for now — Stripe billing integration
- * will gate heavy usage behind Pro subscription ($9.90/mo).
+ * will gate heavy usage behind Pro subscription ($12.90/mo).
  *
  * ENV VARS REQUIRED:
  * - FAL_KEY: fal.ai API key (set in Vercel dashboard, NOT in code)
@@ -25,11 +37,13 @@
  * - Rate limiting: basic IP-based counter (TODO: upgrade to Redis/KV)
  * - Input validation: image size limit, prompt length limit
  *
- * CALLED BY: Frontend generate button (src/app/page.tsx)
- * DEPENDS ON: fal.ai API (https://fal.ai/models)
+ * CALLED BY: Frontend generate button (src/app/page.tsx handleGenerateProductPhoto)
+ * DEPENDS ON: @fal-ai/client npm package, FAL_KEY env var
+ * REFERENCE PATTERN: See ai-image-upscaler/app/api/upscale/route.ts for same pattern
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { fal } from "@fal-ai/client";
 
 /**
  * Maximum image size in bytes (10MB). Product photos shouldn't be larger
@@ -72,6 +86,29 @@ function checkRateLimit(ip: string): boolean {
 
   entry.count++;
   return true;
+}
+
+/**
+ * Type definition for the fal.ai FLUX image-to-image response.
+ *
+ * fal-ai/flux/dev/image-to-image returns an object with an images array.
+ * Each image has: url (CDN URL on fal.media), content_type, width, height.
+ * We only need the url for our use case.
+ *
+ * WHY TYPED: fal.subscribe() returns unknown data by default. Casting to this
+ * interface lets TypeScript validate our property access and gives IDE support
+ * for future maintainers.
+ */
+interface FalFluxImageToImageOutput {
+  images: Array<{
+    url: string;
+    content_type: string;
+    width: number;
+    height: number;
+  }>;
+  timings?: Record<string, number>;
+  seed?: number;
+  has_nsfw_concepts?: boolean[];
 }
 
 export async function POST(request: NextRequest) {
@@ -160,55 +197,59 @@ export async function POST(request: NextRequest) {
   }
 
   /**
-   * Step 4: Call fal.ai API to generate the product photo.
+   * Step 4: Configure fal.ai client and call image generation.
    *
-   * We use fal.ai's image-to-image endpoint with the product photo as
-   * the input image and the style prompt as the generation guidance.
-   * The model replaces/enhances the background while keeping the product.
+   * WHY fal.config() per-request: Serverless functions may share module scope
+   * between warm invocations. Per-request config ensures the right key is always
+   * used and avoids any potential cross-request credential bleed.
+   * Pattern copied from ai-image-upscaler/app/api/upscale/route.ts.
    *
-   * MODEL CHOICE: Using fal-ai/flux/dev for high quality image generation.
-   * This model supports image-to-image with prompt guidance, which is
-   * exactly what we need for product background replacement.
+   * WHY fal.subscribe() not fal.run():
+   * - fal.subscribe() polls the queue until complete — correct for GPU inference
+   * - fal.run() was removed or aliased in @fal-ai/client v1.x
+   * - fal.subscribe() is the canonical method for long-running inferences
+   * - For FLUX dev the job takes ~10-30 seconds — subscribe handles polling
+   *
+   * WHY NOT raw fetch to queue.fal.run:
+   * - queue.fal.run returns {request_id, response_url} immediately (async queue)
+   * - You must then poll response_url until status == "COMPLETED"
+   * - The original code incorrectly read .images from the queue submit response
+   * - This ALWAYS returned undefined -> "No image generated" error
+   * - fal.subscribe() encapsulates this entire flow
+   *
+   * MODEL: fal-ai/flux/dev/image-to-image
+   * Transforms an existing product image with AI-generated backgrounds based
+   * on the text prompt. Strength 0.65 = 65% new content, 35% original structure.
+   * This keeps the product shape visible while replacing the background.
    */
   try {
-    const falResponse = await fetch("https://queue.fal.run/fal-ai/flux/dev/image-to-image", {
-      method: "POST",
-      headers: {
-        "Authorization": `Key ${falApiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
+    fal.config({
+      credentials: falApiKey,
+    });
+
+    const falApiResult = await fal.subscribe("fal-ai/flux/dev/image-to-image", {
+      input: {
         image_url: `data:image/png;base64,${base64Data}`,
         prompt: stylePrompt,
         strength: 0.65,
         num_images: 1,
-        image_size: "square_hd",
         num_inference_steps: 28,
         guidance_scale: 3.5,
-      }),
+      },
     });
 
-    if (!falResponse.ok) {
-      const errorText = await falResponse.text();
-      console.error("[PhotoForge API] fal.ai error:", falResponse.status, errorText);
-      return NextResponse.json(
-        {
-          error: "Generation failed",
-          message: "Image generation failed. Please try again.",
-        },
-        { status: 502 }
-      );
-    }
-
-    const falResult = await falResponse.json();
-
     /**
-     * fal.ai returns images in the `images` array with `url` properties.
-     * We return the first generated image URL to the client.
+     * Extract the generated image URL from fal.ai response.
+     * fal-ai/flux/dev/image-to-image returns { images: [{url, content_type, width, height}] }
+     * The url is a CDN-hosted image on fal.media (included in next.config.ts remotePatterns).
+     *
+     * falApiResult.data is the raw model output — cast to our typed interface.
      */
-    const generatedImageUrl = falResult?.images?.[0]?.url;
+    const responseData = falApiResult.data as FalFluxImageToImageOutput;
+    const generatedImageUrl = responseData?.images?.[0]?.url;
+
     if (!generatedImageUrl) {
-      console.error("[PhotoForge API] No image in fal.ai response:", JSON.stringify(falResult).substring(0, 200));
+      console.error("[PhotoForge API] No image URL in fal.ai response:", JSON.stringify(falApiResult).substring(0, 300));
       return NextResponse.json(
         { error: "No image generated", message: "The AI did not produce an image. Please try again." },
         { status: 500 }
@@ -218,13 +259,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       imageUrl: generatedImageUrl,
-      model: "flux-dev",
+      model: "flux-dev-image-to-image",
     });
   } catch (error) {
-    console.error("[PhotoForge API] Unexpected error:", error);
+    console.error("[PhotoForge API] fal.ai error:", error);
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json(
-      { error: "Server error", message: "An unexpected error occurred. Please try again." },
-      { status: 500 }
+      { error: "Generation failed", message: `Image generation failed: ${errorMessage}` },
+      { status: 502 }
     );
   }
 }
