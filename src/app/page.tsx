@@ -81,6 +81,31 @@ const PRODUCT_PHOTO_BACKGROUND_STYLE_PRESETS = [
   },
 ];
 
+/**
+ * DAILY_FREE_GENERATION_LIMIT — Max free product photo generations per day.
+ * 3/day lets users see value (try multiple styles) without unlimited free access.
+ * At ~$0.03-0.05/generation, 3 free/day costs us max ~$0.15/user/day.
+ * Power users (e-commerce sellers with many products) upgrade fast.
+ * Builder 11, 2026-03-24: monetization layer for all clone apps.
+ */
+const DAILY_FREE_GENERATION_LIMIT = 3;
+
+function getPhotoForgeUsageKey(): string {
+  return `photoforge-usage-${new Date().toISOString().split("T")[0]}`;
+}
+
+function getTodayPhotoForgeUsageCount(): number {
+  if (typeof window === "undefined") return 0;
+  const stored = localStorage.getItem(getPhotoForgeUsageKey());
+  return stored ? parseInt(stored, 10) : 0;
+}
+
+function incrementPhotoForgeUsageCount(): void {
+  if (typeof window === "undefined") return;
+  const current = getTodayPhotoForgeUsageCount();
+  localStorage.setItem(getPhotoForgeUsageKey(), String(current + 1));
+}
+
 export default function PhotoForgeAILandingPage() {
   const [uploadedImagePreviewUrl, setUploadedImagePreviewUrl] = useState<string | null>(null);
   const [uploadedImageBase64, setUploadedImageBase64] = useState<string | null>(null);
@@ -89,6 +114,19 @@ export default function PhotoForgeAILandingPage() {
   const [isGeneratingPhoto, setIsGeneratingPhoto] = useState(false);
   const [generatedPhotoUrl, setGeneratedPhotoUrl] = useState<string | null>(null);
   const [generationErrorMessage, setGenerationErrorMessage] = useState<string | null>(null);
+
+  /** Usage tracking state for free tier gating */
+  const [todayUsageCount, setTodayUsageCount] = useState(0);
+  const [hasReachedDailyLimit, setHasReachedDailyLimit] = useState(false);
+
+  /** Initialize from localStorage on mount */
+  useState(() => {
+    if (typeof window !== "undefined") {
+      const count = getTodayPhotoForgeUsageCount();
+      setTodayUsageCount(count);
+      setHasReachedDailyLimit(count >= DAILY_FREE_GENERATION_LIMIT);
+    }
+  });
 
   /**
    * Handles file drop or selection from the upload zone.
@@ -124,6 +162,17 @@ export default function PhotoForgeAILandingPage() {
   const handleGenerateProductPhoto = useCallback(async () => {
     if (!uploadedImageBase64) return;
 
+    /** Usage gate — check daily limit before wasting an API call */
+    const currentCount = getTodayPhotoForgeUsageCount();
+    if (currentCount >= DAILY_FREE_GENERATION_LIMIT) {
+      setHasReachedDailyLimit(true);
+      setTodayUsageCount(currentCount);
+      setGenerationErrorMessage(
+        `You've used all ${DAILY_FREE_GENERATION_LIMIT} free generations today. Upgrade to Pro for unlimited product photos at $9.90/mo.`
+      );
+      return;
+    }
+
     const selectedPreset = PRODUCT_PHOTO_BACKGROUND_STYLE_PRESETS.find(
       (p) => p.id === selectedStylePresetId
     );
@@ -152,6 +201,11 @@ export default function PhotoForgeAILandingPage() {
 
       if (data.imageUrl) {
         setGeneratedPhotoUrl(data.imageUrl);
+        /** Track successful generation for free tier limits */
+        incrementPhotoForgeUsageCount();
+        const newCount = getTodayPhotoForgeUsageCount();
+        setTodayUsageCount(newCount);
+        setHasReachedDailyLimit(newCount >= DAILY_FREE_GENERATION_LIMIT);
       }
     } catch (error) {
       console.error("[PhotoForge] Generation error:", error);
