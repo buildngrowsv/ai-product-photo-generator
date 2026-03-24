@@ -1,6 +1,6 @@
 # AI Product Photo Generator — STATUS
 
-**Last updated:** 2026-03-24 (Builder 6, commit 4f8272d)
+**Last updated:** 2026-03-24 (Builder 6, BCL DNS + alias session)
 
 ## Current State
 
@@ -10,8 +10,9 @@
 | API route | ✅ DONE | `@fal-ai/client` fal.subscribe() — hosted, server-side FAL_KEY |
 | Build | ✅ PASSING | `npm run build` clean |
 | GitHub push | ✅ DONE | `main` branch at 4f8272d |
-| Vercel deploy | 🚫 BLOCKED | Free-tier 100 deploys/day limit hit; auto-deploys on next push |
-| FAL_KEY env | ⚠️ NEEDED | Must be set in Vercel dashboard before production works |
+| Vercel deploy | ✅ LIVE | https://ai-product-photo-generator-eusjej2u1-buildngrowsvs-projects.vercel.app |
+| Subdomain | ✅ LIVE | https://productphoto.symplyai.io (CNAME + Vercel alias + TLS cert issued) |
+| FAL_KEY env | ⚠️ NEEDED | Must be set in Vercel dashboard before AI generate works in prod |
 
 ## Root Cause Fixed (2026-03-24)
 
@@ -46,7 +47,15 @@ FAL_KEY=<fal.ai API key from UserRoot/.secrets/fal-ai-key.txt>
 - **Input validation** — 10MB image limit, 500-char prompt limit
 - **fal.ai model** — `fal-ai/flux/dev/image-to-image`, strength 0.65
 
+## Production URLs
+
+- **Primary:** https://productphoto.symplyai.io
+- **Vercel direct:** https://ai-product-photo-generator-eusjej2u1-buildngrowsvs-projects.vercel.app
+
 ## Blockers
 
-1. **Vercel deploy limit** — resets in ~24h; next push to `main` auto-deploys via GitHub integration
-2. **FAL_KEY** — must be set in Vercel dashboard (key available at `UserRoot/.secrets/fal-ai-key.txt`)
+1. **FAL_KEY** — must be set in Vercel dashboard for AI generate to work (key at `UserRoot/.secrets/fal-ai-key.txt`)
+   ```bash
+   # Set via CLI:
+   cat /Users/ak/UserRoot/.secrets/fal-ai-key.txt | vercel env add FAL_KEY production
+   ```
