@@ -83,13 +83,17 @@ const PRODUCT_PHOTO_BACKGROUND_STYLE_PRESETS = [
 
 export default function PhotoForgeAILandingPage() {
   const [uploadedImagePreviewUrl, setUploadedImagePreviewUrl] = useState<string | null>(null);
+  const [uploadedImageBase64, setUploadedImageBase64] = useState<string | null>(null);
   const [selectedStylePresetId, setSelectedStylePresetId] = useState<string>("clean-white");
   const [isDragActiveOverDropzone, setIsDragActiveOverDropzone] = useState(false);
+  const [isGeneratingPhoto, setIsGeneratingPhoto] = useState(false);
+  const [generatedPhotoUrl, setGeneratedPhotoUrl] = useState<string | null>(null);
+  const [generationErrorMessage, setGenerationErrorMessage] = useState<string | null>(null);
 
   /**
    * Handles file drop or selection from the upload zone.
-   * Creates a local preview URL — actual AI generation will happen
-   * when the user clicks "Generate" (wired to /api/generate in Phase 2).
+   * Creates a local preview URL AND reads the file as base64 for API submission.
+   * The base64 is sent to /api/generate which proxies to fal.ai server-side.
    */
   const handleFileUploadOrDrop = useCallback((files: FileList | null) => {
     if (!files || files.length === 0) return;
@@ -98,7 +102,64 @@ export default function PhotoForgeAILandingPage() {
 
     const previewUrl = URL.createObjectURL(file);
     setUploadedImagePreviewUrl(previewUrl);
+    setGeneratedPhotoUrl(null);
+    setGenerationErrorMessage(null);
+
+    /**
+     * Read file as base64 for API submission.
+     * FileReader converts the blob to a data URL (data:image/png;base64,...).
+     */
+    const reader = new FileReader();
+    reader.onload = () => {
+      setUploadedImageBase64(reader.result as string);
+    };
+    reader.readAsDataURL(file);
   }, []);
+
+  /**
+   * Calls /api/generate to create a professional product photo.
+   * Sends the uploaded image as base64 + the selected style preset's prompt.
+   * The API proxies to fal.ai with our server-side FAL_KEY.
+   */
+  const handleGenerateProductPhoto = useCallback(async () => {
+    if (!uploadedImageBase64) return;
+
+    const selectedPreset = PRODUCT_PHOTO_BACKGROUND_STYLE_PRESETS.find(
+      (p) => p.id === selectedStylePresetId
+    );
+    if (!selectedPreset) return;
+
+    setIsGeneratingPhoto(true);
+    setGenerationErrorMessage(null);
+    setGeneratedPhotoUrl(null);
+
+    try {
+      const response = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          imageBase64: uploadedImageBase64,
+          stylePrompt: selectedPreset.prompt,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setGenerationErrorMessage(data.message || "Generation failed. Please try again.");
+        return;
+      }
+
+      if (data.imageUrl) {
+        setGeneratedPhotoUrl(data.imageUrl);
+      }
+    } catch (error) {
+      console.error("[PhotoForge] Generation error:", error);
+      setGenerationErrorMessage("Network error. Please check your connection and try again.");
+    } finally {
+      setIsGeneratingPhoto(false);
+    }
+  }, [uploadedImageBase64, selectedStylePresetId]);
 
   return (
     <div className="min-h-screen bg-gray-950">
@@ -227,11 +288,59 @@ export default function PhotoForgeAILandingPage() {
                   </div>
                 </div>
 
+                {/* Generation error message */}
+                {generationErrorMessage && (
+                  <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-sm">
+                    {generationErrorMessage}
+                  </div>
+                )}
+
+                {/* Generated result */}
+                {generatedPhotoUrl && (
+                  <div className="space-y-3">
+                    <p className="text-sm font-medium text-green-400">Your professional product photo:</p>
+                    <div className="rounded-2xl overflow-hidden border border-green-500/30 glow-border">
+                      <img
+                        src={generatedPhotoUrl}
+                        alt="AI-generated product photo"
+                        className="w-full max-h-96 object-contain bg-gray-900"
+                      />
+                    </div>
+                    <a
+                      href={generatedPhotoUrl}
+                      download="photoforge-product-photo.png"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full py-3 rounded-xl font-medium text-white bg-green-600 hover:bg-green-500 transition-colors flex items-center justify-center gap-2"
+                    >
+                      <Download className="h-5 w-5" />
+                      Download Photo
+                    </a>
+                  </div>
+                )}
+
                 {/* Generate CTA */}
-                <button className="w-full py-4 rounded-xl font-bold text-lg text-white bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 transition-all shadow-lg shadow-indigo-500/25 flex items-center justify-center gap-2">
-                  <Sparkles className="h-5 w-5" />
-                  Generate Professional Photo
-                  <ArrowRight className="h-5 w-5" />
+                <button
+                  onClick={handleGenerateProductPhoto}
+                  disabled={isGeneratingPhoto || !uploadedImageBase64}
+                  className={`w-full py-4 rounded-xl font-bold text-lg text-white transition-all shadow-lg flex items-center justify-center gap-2 ${
+                    isGeneratingPhoto
+                      ? "bg-gray-600 cursor-wait"
+                      : "bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 shadow-indigo-500/25"
+                  }`}
+                >
+                  {isGeneratingPhoto ? (
+                    <>
+                      <div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      Generating...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="h-5 w-5" />
+                      Generate Professional Photo
+                      <ArrowRight className="h-5 w-5" />
+                    </>
+                  )}
                 </button>
               </div>
             )}
