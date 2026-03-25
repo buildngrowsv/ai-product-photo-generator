@@ -510,9 +510,21 @@ export default function PhotoForgeAILandingPage() {
                   </li>
                 ))}
               </ul>
-              <button className="w-full py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 transition-all shadow-lg shadow-indigo-500/25">
+              {/*
+                MONETIZATION (2026-03-25, Builder 11): Wired dead <button> to live
+                Stripe Payment Link. Previously clicking "Upgrade to Pro" did nothing.
+                Payment Link: $12.90/mo AI Product Photo Generator Pro.
+                Source: ai-clone-stripe-links.md (Builder 12 + Stripe API agent, 2026-03-24).
+                target="_blank" keeps user on landing page during checkout.
+              */}
+              <a
+                href="https://buy.stripe.com/14AaEX0Fj9MQ1ITftLfMA08"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block w-full py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 transition-all shadow-lg shadow-indigo-500/25 text-center"
+              >
                 Upgrade to Pro
-              </button>
+              </a>
             </div>
           </div>
         </div>
