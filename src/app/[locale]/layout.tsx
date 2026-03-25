@@ -36,6 +36,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import "../globals.css";
+import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 
 /**
  * Inter font — same variable-based setup as the original layout.
@@ -238,6 +239,9 @@ export default async function LocaleLayout({
          * components can call useTranslations() without an extra provider
          * higher in the tree. messages are serialized from server to client.
          */}
+                <header className="fixed top-2 right-4 z-50 flex items-center">
+          <LocaleSwitcher />
+        </header>
         <NextIntlClientProvider messages={messages}>
           {children}
         </NextIntlClientProvider>
