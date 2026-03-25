@@ -25,6 +25,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { ProductPhotoProCheckoutButton } from "@/components/ProductPhotoProCheckoutButton";
 import {
   Upload,
   Sparkles,
@@ -511,20 +512,16 @@ export default function PhotoForgeAILandingPage() {
                 ))}
               </ul>
               {/*
-                MONETIZATION (2026-03-25, Builder 11): Wired dead <button> to live
-                Stripe Payment Link. Previously clicking "Upgrade to Pro" did nothing.
-                Payment Link: $12.90/mo AI Product Photo Generator Pro.
-                Source: ai-clone-stripe-links.md (Builder 12 + Stripe API agent, 2026-03-24).
-                target="_blank" keeps user on landing page during checkout.
+                MONETIZATION (2026-03-25, Builder 9): Upgraded static buy.stripe.com
+                link (Builder 11) to API checkout route for webhook + metadata support.
+                POST /api/stripe/create-checkout → Stripe hosted checkout → webhook.
+                Stripe Product: AI Product Photo Pro $11.99/mo
+                Price ID: price_1TEUbhGsPhSTDD4x6Rcg9hKo
               */}
-              <a
-                href="https://buy.stripe.com/14AaEX0Fj9MQ1ITftLfMA08"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block w-full py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 transition-all shadow-lg shadow-indigo-500/25 text-center"
-              >
-                Upgrade to Pro
-              </a>
+              <ProductPhotoProCheckoutButton
+                label="Upgrade to Pro"
+                className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 shadow-lg shadow-indigo-500/25"
+              />
             </div>
           </div>
         </div>
