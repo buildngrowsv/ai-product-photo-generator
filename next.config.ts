@@ -7,25 +7,26 @@
  * This is the same pattern used across all our fal.ai-powered clones
  * (ai-image-upscaler, ai-background-remover, etc.).
  *
- * If we ever add an <Image> component that references fal.media URLs,
- * this allowance prevents the "Invalid src" error Next.js would throw.
- * The landing page currently uses regular <img> tags for the result,
- * so this is proactive but harmless — avoids the gotcha on future
- * iteration when someone upgrades to <Image>.
- *
  * NEXT-INTL PLUGIN (added 2026-03-24, pane1774 T13):
- * createNextIntlPlugin wraps the existing config to enable:
- *   - Alias resolution for next-intl/server imports (getTranslations, etc.)
- *   - Compile-time optimizations for message bundles
- *   - Proper RSC (React Server Component) support for locale hooks
- * The plugin path points to our request config at src/i18n/request.ts.
+ * createNextIntlPlugin wraps the existing config to inject the next-intl/config
+ * webpack alias. However, Next.js 16 moved turbopack config from
+ * `experimental.turbo` to top-level `turbopack`, and next-intl 3.x still writes
+ * to the old experimental.turbo key (ignored in Next 16).
+ *
+ * FIX: We manually set `turbopack.resolveAlias["next-intl/config"]` to point
+ * to our src/i18n/request.ts file. This is the same alias the plugin would set
+ * via experimental.turbo, but using the correct Next.js 16 key. Without this,
+ * the server chunk throws "Couldn't find next-intl config file" at prerender.
+ *
+ * Reference: https://nextjs.org/docs/app/api-reference/turbopack#resolvealias
+ * Background: next-intl issue https://github.com/amannn/next-intl/issues/1350
+ * (experimental.turbo deprecated in Next 16, replaced by turbopack at root)
  */
 import createNextIntlPlugin from "next-intl/plugin";
 import type { NextConfig } from "next";
 
-// Wrap with next-intl plugin, pointing to our server request config.
-// This enables next-intl's server-side APIs (getTranslations, getMessages)
-// to work correctly in App Router server components.
+// The plugin handles webpack alias (for non-turbopack builds) and would handle
+// turbopack if it used the correct Next 16 key. We keep it for webpack compat.
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 const nextConfig: NextConfig = {
@@ -40,6 +41,25 @@ const nextConfig: NextConfig = {
         hostname: "fal.media",
       },
     ],
+  },
+  /**
+   * Turbopack resolveAlias for next-intl/config.
+   *
+   * next-intl uses a virtual module "next-intl/config" as the bridge between
+   * the plugin (which knows the request.ts path at config time) and the
+   * server runtime (which needs to call getRequestConfig). Without this alias,
+   * the server chunk imports an empty stub and throws "Couldn't find config".
+   *
+   * In Next.js ≤15: set via experimental.turbo.resolveAlias (done by plugin)
+   * In Next.js 16+: must be set at top-level turbopack.resolveAlias
+   */
+  turbopack: {
+    resolveAlias: {
+      // Relative path required — Turbopack in Next.js 16 does not support
+      // absolute paths in resolveAlias yet ("server relative imports not
+      // implemented"). The path is relative to the project root (cwd).
+      "next-intl/config": "./src/i18n/request.ts",
+    },
   },
 };
 
