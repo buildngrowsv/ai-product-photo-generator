@@ -24,7 +24,7 @@
 
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { ProductPhotoProCheckoutButton } from "@/components/ProductPhotoProCheckoutButton";
 import {
   Upload,
@@ -120,6 +120,16 @@ export default function PhotoForgeAILandingPage() {
   const [todayUsageCount, setTodayUsageCount] = useState(0);
   const [hasReachedDailyLimit, setHasReachedDailyLimit] = useState(false);
 
+  /**
+   * T018 (2026-03-26): Pro subscriber token state.
+   * After a successful Stripe checkout, the success_url includes ?token=<uuid>.
+   * We capture it here and persist to localStorage so the Pro bypass survives
+   * page refreshes. Sent as x-pro-token header on every /api/generate request.
+   * The server-side isProActive() checks Redis — if token is "active", the user
+   * bypasses IP rate limiting and gets the Pro character limit.
+   */
+  const [proToken, setProToken] = useState<string | null>(null);
+
   /** Initialize from localStorage on mount */
   useState(() => {
     if (typeof window !== "undefined") {
@@ -128,6 +138,25 @@ export default function PhotoForgeAILandingPage() {
       setHasReachedDailyLimit(count >= DAILY_FREE_GENERATION_LIMIT);
     }
   });
+
+  /**
+   * T018 (2026-03-26): Capture Pro token from URL or localStorage on mount.
+   * When Stripe redirects back after checkout, success_url contains ?token=<uuid>.
+   * We pull it from the URL, persist it in localStorage, and set it in state.
+   * On subsequent page loads without the URL param, we restore from localStorage.
+   * This ensures Pro status persists for the full subscription lifetime.
+   */
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tokenFromUrl = urlParams.get("token");
+    if (tokenFromUrl) {
+      localStorage.setItem("productphoto_pro_token", tokenFromUrl);
+      setProToken(tokenFromUrl);
+    } else {
+      const storedToken = localStorage.getItem("productphoto_pro_token");
+      if (storedToken) setProToken(storedToken);
+    }
+  }, []);
 
   /**
    * Handles file drop or selection from the upload zone.
@@ -186,7 +215,13 @@ export default function PhotoForgeAILandingPage() {
     try {
       const response = await fetch("/api/generate", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          // T018 (2026-03-26): Send Pro entitlement token so the server can bypass
+          // IP rate limiting for paying subscribers. isProActive() on the server
+          // validates against Redis — empty string is treated as no token (free tier).
+          "x-pro-token": proToken ?? "",
+        },
         body: JSON.stringify({
           imageBase64: uploadedImageBase64,
           stylePrompt: selectedPreset.prompt,
@@ -214,7 +249,7 @@ export default function PhotoForgeAILandingPage() {
     } finally {
       setIsGeneratingPhoto(false);
     }
-  }, [uploadedImageBase64, selectedStylePresetId]);
+  }, [uploadedImageBase64, selectedStylePresetId, proToken]);
 
   return (
     <div className="min-h-screen bg-gray-950">
