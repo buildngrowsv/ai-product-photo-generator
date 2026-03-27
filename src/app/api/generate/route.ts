@@ -44,6 +44,10 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { fal } from "@fal-ai/client";
+import {
+  checkIpRateLimit,
+  extractClientIpAddress,
+} from "@/lib/server-ip-rate-limiter";
 
 /**
  * Maximum image size in bytes (10MB). Product photos shouldn't be larger
@@ -58,35 +62,6 @@ const MAX_IMAGE_SIZE_BYTES = 10 * 1024 * 1024;
  * and may indicate prompt injection attempts.
  */
 const MAX_PROMPT_LENGTH_CHARS = 500;
-
-/**
- * Simple in-memory rate limiter. Tracks requests per IP per minute.
- * TODO: Replace with Vercel KV or Upstash Redis for production at scale.
- *
- * WHY IN-MEMORY: For MVP with low traffic (~1.4k visitors/mo projected),
- * in-memory rate limiting is sufficient. Each Vercel serverless function
- * instance has its own memory, so this isn't globally consistent — but it
- * catches obvious abuse within a single instance's lifetime.
- */
-const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
-const RATE_LIMIT_MAX_REQUESTS_PER_MINUTE = 5;
-
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now();
-  const entry = rateLimitMap.get(ip);
-
-  if (!entry || now > entry.resetAt) {
-    rateLimitMap.set(ip, { count: 1, resetAt: now + 60000 });
-    return true;
-  }
-
-  if (entry.count >= RATE_LIMIT_MAX_REQUESTS_PER_MINUTE) {
-    return false;
-  }
-
-  entry.count++;
-  return true;
-}
 
 /**
  * Type definition for the fal.ai FLUX image-to-image response.
@@ -130,11 +105,16 @@ export async function POST(request: NextRequest) {
 
   /**
    * Step 2: Rate limit check.
-   * Prevent abuse — 5 requests per minute per IP is generous for
-   * legitimate product photo generation use cases.
+   * Prevent abuse — 5 requests per 24h per IP via durable Upstash Redis
+   * sliding-window (wave-2 hardening 2026-03-27). Replaced in-memory Map
+   * (per-instance, resets on cold start) with checkIpRateLimit() from
+   * @/lib/server-ip-rate-limiter, which uses @upstash/ratelimit for
+   * globally consistent limits across all parallel serverless instances.
+   * Falls back to in-memory if UPSTASH env vars are not set.
    */
-  const clientIp = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
-  if (!checkRateLimit(clientIp)) {
+  const _clientIp = extractClientIpAddress(request);
+  const _rateLimitResult = await checkIpRateLimit(_clientIp);
+  if (!_rateLimitResult.allowed) {
     return NextResponse.json(
       {
         error: "Rate limited",
