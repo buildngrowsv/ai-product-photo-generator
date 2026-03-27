@@ -26,6 +26,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { createPendingToken } from "@/lib/subscription-store";
 
 /**
  * PLAN_TO_STRIPE_PRICE_ID — maps plan slug sent from the client button to the
@@ -71,8 +72,27 @@ export async function POST(request: NextRequest) {
     process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ||
     "http://localhost:3000";
 
+  // ---------------------------------------------------------------------------
+  // PRO ENTITLEMENT TOKEN (T018, 2026-03-26): Generate before Stripe session.
+  //
+  // We create a UUID token now and:
+  //   1. Store it as "pending" in Upstash Redis (1h TTL)
+  //   2. Pass it as client_reference_id so Stripe echoes it back in the webhook
+  //   3. Embed it in success_url so the client can save it in localStorage
+  //
+  // The webhook (/api/stripe/webhook) activates the token on
+  // checkout.session.completed, upgrading its state to "active" (13-month TTL).
+  // The generate route checks isProActive(x-pro-token) BEFORE IP rate limiting.
+  //
+  // If Upstash is not configured, createPendingToken() still returns a UUID —
+  // checkout works, but Pro bypass won't function until env vars are set.
+  // ---------------------------------------------------------------------------
+  const subscriptionToken = await createPendingToken();
+
   // Build success and cancel URLs.
-  const successUrl = `${appUrl}/success?plan=${encodeURIComponent(plan)}`;
+  // Token appended to success_url so the client-side component can read it from
+  // URLSearchParams and persist to localStorage("productphoto_pro_token").
+  const successUrl = `${appUrl}/success?plan=${encodeURIComponent(plan)}&token=${encodeURIComponent(subscriptionToken)}`;
   const cancelUrl = `${appUrl}/#pricing`;
 
   // Construct the form-encoded body for the Stripe Checkout Session API.
@@ -83,6 +103,7 @@ export async function POST(request: NextRequest) {
     `success_url=${encodeURIComponent(successUrl)}`,
     `cancel_url=${encodeURIComponent(cancelUrl)}`,
     `allow_promotion_codes=true`,
+    `client_reference_id=${encodeURIComponent(subscriptionToken)}`,
     `metadata[plan]=${encodeURIComponent(plan)}`,
     `metadata[source]=product-photo-generator`,
   ];

@@ -28,7 +28,14 @@
  * Builder 9 (2026-03-25, T-productphoto-stripe).
  */
 
+// T018 (2026-03-26): nodejs runtime added for fleet consistency with all other
+// T018 webhook routes. This webhook uses Web Crypto (not Stripe SDK constructEvent),
+// so it would work on Edge too — but nodejs ensures forward compatibility when
+// the Stripe SDK import is added later (SDK needs Node.js crypto).
+export const runtime = "nodejs";
+
 import { NextRequest, NextResponse } from "next/server";
+import { activateToken } from "@/lib/subscription-store";
 
 export const dynamic = "force-dynamic";
 
@@ -103,14 +110,26 @@ export async function POST(request: NextRequest) {
 
   switch (event.type) {
     case "checkout.session.completed": {
+      // T018 (2026-03-26): Activate the subscription token stored in Redis.
+      // The token was generated at checkout creation and passed as
+      // client_reference_id. Stripe echoes it back here — we upgrade it from
+      // "pending" to "active" (13-month TTL) so future generate requests
+      // from this user's x-pro-token header bypass the IP rate limit.
       const session = event.data.object;
-      console.log("[webhook] checkout.session.completed:", {
-        sessionId: session["id"],
-        customerId: session["customer"],
-        subscriptionId: session["subscription"],
-        metadata: session["metadata"],
-      });
-      // TODO: Write subscription activation to DB when user accounts are added.
+      const subscriptionToken = session["client_reference_id"] as string | null;
+      if (subscriptionToken) {
+        await activateToken(subscriptionToken);
+        console.log("[webhook] checkout.session.completed: token activated", {
+          sessionId: session["id"],
+          token: subscriptionToken,
+        });
+      } else {
+        console.warn(
+          "[webhook] checkout.session.completed: no client_reference_id — " +
+            "token not activated. Session predates T018 or checkout route not updated.",
+          { sessionId: session["id"] }
+        );
+      }
       break;
     }
     default:
