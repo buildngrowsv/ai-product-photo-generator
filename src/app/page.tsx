@@ -129,6 +129,8 @@ export default function PhotoForgeAILandingPage() {
    * bypasses IP rate limiting and gets the Pro character limit.
    */
   const [proToken, setProToken] = useState<string | null>(null);
+  const [isFalConfigured, setIsFalConfigured] = useState(false);
+  const [isServiceStatusLoading, setIsServiceStatusLoading] = useState(true);
 
   /** Initialize from localStorage on mount */
   useState(() => {
@@ -158,12 +160,51 @@ export default function PhotoForgeAILandingPage() {
     }
   }, []);
 
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadRuntimeStatus() {
+      try {
+        const response = await fetch("/api/runtime-status", { cache: "no-store" });
+        if (!response.ok) {
+          throw new Error("Could not load runtime status.");
+        }
+
+        const data = (await response.json()) as { falConfigured?: boolean };
+        if (!cancelled) {
+          setIsFalConfigured(Boolean(data.falConfigured));
+        }
+      } catch {
+        if (!cancelled) {
+          setIsFalConfigured(false);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsServiceStatusLoading(false);
+        }
+      }
+    }
+
+    void loadRuntimeStatus();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   /**
    * Handles file drop or selection from the upload zone.
    * Creates a local preview URL AND reads the file as base64 for API submission.
    * The base64 is sent to /api/generate which proxies to fal.ai server-side.
    */
   const handleFileUploadOrDrop = useCallback((files: FileList | null) => {
+    if (!isFalConfigured) {
+      setGenerationErrorMessage(
+        "Image generation is not configured on this deployment yet. Upload and checkout are paused until the fal.ai backend is live."
+      );
+      return;
+    }
+
     if (!files || files.length === 0) return;
     const file = files[0];
     if (!file.type.startsWith("image/")) return;
@@ -182,7 +223,7 @@ export default function PhotoForgeAILandingPage() {
       setUploadedImageBase64(reader.result as string);
     };
     reader.readAsDataURL(file);
-  }, []);
+  }, [isFalConfigured]);
 
   /**
    * Calls /api/generate to create a professional product photo.
@@ -190,6 +231,13 @@ export default function PhotoForgeAILandingPage() {
    * The API proxies to fal.ai with our server-side FAL_KEY.
    */
   const handleGenerateProductPhoto = useCallback(async () => {
+    if (!isFalConfigured) {
+      setGenerationErrorMessage(
+        "Image generation is not configured on this deployment yet. Please come back after the fal.ai backend is enabled."
+      );
+      return;
+    }
+
     if (!uploadedImageBase64) return;
 
     /** Usage gate — check daily limit before wasting an API call */
@@ -249,7 +297,10 @@ export default function PhotoForgeAILandingPage() {
     } finally {
       setIsGeneratingPhoto(false);
     }
-  }, [uploadedImageBase64, selectedStylePresetId, proToken]);
+  }, [isFalConfigured, uploadedImageBase64, selectedStylePresetId, proToken]);
+
+  const isGenerationAvailable = !isServiceStatusLoading && isFalConfigured;
+  const isGenerationBlocked = !isGenerationAvailable;
 
   return (
     <div className="min-h-screen bg-gray-950">
@@ -267,8 +318,11 @@ export default function PhotoForgeAILandingPage() {
             <a href="#faq" className="text-sm text-gray-400 hover:text-white transition-colors">
               FAQ
             </a>
-            <button className="px-4 py-2 text-sm font-medium rounded-lg bg-indigo-600 hover:bg-indigo-500 transition-colors">
-              Get Started Free
+            <button
+              disabled={isGenerationBlocked}
+              className="px-4 py-2 text-sm font-medium rounded-lg bg-indigo-600 hover:bg-indigo-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isServiceStatusLoading ? "Checking Service…" : isGenerationAvailable ? "Get Started Free" : "Generation Unavailable"}
             </button>
           </div>
         </div>
@@ -284,7 +338,7 @@ export default function PhotoForgeAILandingPage() {
           </div>
 
           <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6">
-            <span className="gradient-text">AI Product Photos</span>
+            <span className="gradient-text">AI Product Photos </span>
             <br />
             <span className="text-white">in Seconds</span>
           </h1>
@@ -293,6 +347,17 @@ export default function PhotoForgeAILandingPage() {
             Upload your product photo and get professional e-commerce photography
             with AI-generated backgrounds. No design skills needed.
           </p>
+
+          {isGenerationBlocked ? (
+            <div className="max-w-3xl mx-auto mb-8 rounded-2xl border border-amber-500/30 bg-amber-500/10 px-6 py-5 text-left">
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-amber-300">
+                Generation Paused
+              </p>
+              <p className="mt-2 text-sm text-amber-100/90">
+                This deployment is missing its fal.ai backend key, so uploads, generation, and paid checkout are intentionally disabled until the core service is configured.
+              </p>
+            </div>
+          ) : null}
 
           {/* ============== INTERACTIVE UPLOAD DEMO (ON THE HERO) ============== */}
           <div className="max-w-3xl mx-auto">
@@ -310,11 +375,14 @@ export default function PhotoForgeAILandingPage() {
                   handleFileUploadOrDrop(e.dataTransfer.files);
                 }}
                 className={`relative rounded-2xl border-2 border-dashed p-16 transition-all cursor-pointer glow-border ${
-                  isDragActiveOverDropzone
-                    ? "border-indigo-400 bg-indigo-500/10"
-                    : "border-white/10 bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04]"
+                  isGenerationBlocked
+                    ? "border-amber-500/30 bg-amber-500/5 cursor-not-allowed"
+                    : isDragActiveOverDropzone
+                      ? "border-indigo-400 bg-indigo-500/10"
+                      : "border-white/10 bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04]"
                 }`}
                 onClick={() => {
+                  if (isGenerationBlocked) return;
                   const input = document.createElement("input");
                   input.type = "file";
                   input.accept = "image/*";
@@ -329,14 +397,19 @@ export default function PhotoForgeAILandingPage() {
                   </div>
                   <div>
                     <p className="text-lg font-medium text-white">
-                      Drop your product photo here
+                      {isGenerationAvailable ? "Drop your product photo here" : "Image generation is currently unavailable"}
                     </p>
                     <p className="text-sm text-gray-500 mt-1">
-                      or click to browse — PNG, JPG, WebP up to 10MB
+                      {isGenerationAvailable
+                        ? "or click to browse — PNG, JPG, WebP up to 10MB"
+                        : "This deployment is waiting on FAL_KEY before uploads can be processed"}
                     </p>
                   </div>
-                  <button className="mt-2 px-6 py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 transition-all">
-                    Upload Product Photo
+                  <button
+                    disabled={isGenerationBlocked}
+                    className="mt-2 px-6 py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isGenerationAvailable ? "Upload Product Photo" : "Uploads Paused"}
                   </button>
                 </div>
               </div>
@@ -412,11 +485,13 @@ export default function PhotoForgeAILandingPage() {
                 {/* Generate CTA */}
                 <button
                   onClick={handleGenerateProductPhoto}
-                  disabled={isGeneratingPhoto || !uploadedImageBase64}
+                  disabled={isGeneratingPhoto || !uploadedImageBase64 || isGenerationBlocked}
                   className={`w-full py-4 rounded-xl font-bold text-lg text-white transition-all shadow-lg flex items-center justify-center gap-2 ${
                     isGeneratingPhoto
                       ? "bg-gray-600 cursor-wait"
-                      : "bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 shadow-indigo-500/25"
+                      : isGenerationBlocked
+                        ? "bg-amber-700/70 cursor-not-allowed"
+                        : "bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 shadow-indigo-500/25"
                   }`}
                 >
                   {isGeneratingPhoto ? (
@@ -427,7 +502,7 @@ export default function PhotoForgeAILandingPage() {
                   ) : (
                     <>
                       <Sparkles className="h-5 w-5" />
-                      Generate Professional Photo
+                      {isGenerationAvailable ? "Generate Professional Photo" : "Generation Unavailable On This Deployment"}
                       <ArrowRight className="h-5 w-5" />
                     </>
                   )}
@@ -554,7 +629,13 @@ export default function PhotoForgeAILandingPage() {
                 Price ID: price_1TEUbhGsPhSTDD4x6Rcg9hKo
               */}
               <ProductPhotoProCheckoutButton
-                label="Upgrade to Pro"
+                label={isGenerationAvailable ? "Upgrade to Pro" : "Checkout Paused Until Generation Is Live"}
+                disabled={isGenerationBlocked}
+                disabledReason={
+                  isGenerationBlocked
+                    ? "Paid checkout is intentionally disabled until the fal.ai backend is configured and the core feature is actually available."
+                    : null
+                }
                 className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 shadow-lg shadow-indigo-500/25"
               />
             </div>
@@ -615,9 +696,25 @@ export default function PhotoForgeAILandingPage() {
             <Camera className="h-5 w-5 text-indigo-400" />
             <span className="font-semibold gradient-text">PhotoForge AI</span>
           </div>
-          <p className="text-sm text-gray-500">
-            &copy; {new Date().getFullYear()} PhotoForge AI. Professional product photography powered by AI.
-          </p>
+          <div className="flex flex-col items-center gap-3 md:items-end">
+            <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-gray-400 md:justify-end">
+              <a href="/pricing" className="hover:text-white transition-colors">
+                Pricing
+              </a>
+              <a href="/privacy" className="hover:text-white transition-colors">
+                Privacy
+              </a>
+              <a href="/terms" className="hover:text-white transition-colors">
+                Terms
+              </a>
+              <a href="/refunds" className="hover:text-white transition-colors">
+                Refunds
+              </a>
+            </div>
+            <p className="text-center text-sm text-gray-500 md:text-right">
+              &copy; {new Date().getFullYear()} PhotoForge AI. Professional product photography powered by AI.
+            </p>
+          </div>
         </div>
       </footer>
     </div>
