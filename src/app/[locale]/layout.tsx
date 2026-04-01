@@ -31,30 +31,21 @@
 
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { Inter } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import "../globals.css";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-
-/**
- * Inter font — same variable-based setup as the original layout.
- * --font-inter CSS variable is referenced by Tailwind's font-sans class
- * via the variable class on <body>.
- */
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-});
+import { GoogleAnalytics } from "@next/third-parties/google";
 
 /**
  * Production URL — used for canonical and hreflang alternates.
  * Change this when a custom domain (e.g. productphotos.symplyai.io) is set.
  */
-const siteUrl =
-  "https://ai-product-photo-generator-buildngrowsvs-projects.vercel.app";
+const siteUrl = (
+  process.env.NEXT_PUBLIC_APP_URL || "https://product-photo.symplyai.io"
+).replace(/\/$/, "");
 
 /**
  * JSON-LD: SoftwareApplication schema
@@ -232,9 +223,11 @@ export default async function LocaleLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdFaqData) }}
         />
       </head>
-      <body
-        className={`${inter.variable} font-sans antialiased bg-gray-950 text-white min-h-screen`}
-      >
+      <body className="font-sans antialiased bg-gray-950 text-white min-h-screen">
+        {/* GA4 — conditionally rendered; set NEXT_PUBLIC_GA_ID in Vercel env to activate */}
+        {process.env.NEXT_PUBLIC_GA_ID && (
+          <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
+        )}
         <LanguageSwitcher locale={locale} />
         {/*
          * NextIntlClientProvider wraps the entire app so that client
