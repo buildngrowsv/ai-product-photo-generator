@@ -1,36 +1,87 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PhotoForge AI
 
-## Getting Started
+AI-powered product photo generator for ecommerce sellers. Upload a product image,
+pick a scene, and generate marketplace-ready product photography with fal.ai.
 
-First, run the development server:
+## Publish Readiness
+
+This repo includes:
+
+- Landing page and pricing flow for free vs Pro conversion
+- Stripe Checkout session creation plus webhook-based Pro token activation
+- In-tree buyer-facing legal pages: `/privacy`, `/terms`, `/refunds`
+- SEO routes: `robots.txt`, `sitemap.xml`, locale-aware metadata
+- Upstash-backed Pro entitlement token storage and rate limiting
+- Fail-closed storefront behavior when `FAL_KEY` is missing: uploads, generation, and checkout stay disabled instead of pretending the product is live
+
+## Environment Variables
+
+Copy `.env.example` to `.env.local` and provide real values:
+
+- `FAL_KEY`
+- `UPSTASH_REDIS_REST_URL`
+- `UPSTASH_REDIS_REST_TOKEN`
+- `STRIPE_SECRET_KEY`
+- `STRIPE_WEBHOOK_SECRET`
+- `NEXT_PUBLIC_APP_URL`
+
+## Local Development
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Verification
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run build
+npm test
+npm run test:e2e
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Browser Test Matrix
 
-## Learn More
+This repo now has an explicit split between local fail-closed checks and remote
+deployment checks so builders do not accidentally test the wrong environment.
 
-To learn more about Next.js, take a look at the following resources:
+- `npm run test:e2e`
+  Runs the dev-safe public visitor flow against a local `next dev` server on
+  port `4391`. This is the default command for local work before any deploy.
+- `PLAYWRIGHT_BASE_URL=https://<dev-deployment-host> npm run test:e2e:dev`
+  Runs the same anonymous visitor journey against the deployed dev site. Use
+  this before promoting changes toward prod.
+- `npm run test:e2e:prod`
+  Runs the public visitor journey against `https://productphoto.symplyai.io`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### What The Browser Suite Actually Verifies
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Homepage loads with hero, social proof, FAQ, and pricing surface
+- Runtime status is honest: uploads and checkout are enabled only when
+  `FAL_KEY` is configured on that deployment
+- Pricing page renders the free/pro ladder and uses paused checkout messaging
+  when the core generation backend is offline
+- `/api/generate` and `/api/stripe/create-checkout` fail closed instead of
+  pretending the product is available
 
-## Deploy on Vercel
+### Dev vs Prod Expectations
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Dev site:
+  Safe to run the anonymous visitor flow and confirm runtime honesty before a
+  push to production. If `FAL_KEY` is absent, the correct result is a paused UI
+  with `503` responses from generate/checkout routes.
+- Prod site:
+  Run only after the dev deployment is smooth. Production should either show the
+  same paused state intentionally, or a live upload/checkout path if the fal.ai
+  backend has been configured on that environment.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## External Deployment Dependencies
+
+The following must be configured outside the repo before launch:
+
+- Live Stripe product/price and webhook endpoint secrets
+- Production fal.ai key
+- Production Upstash Redis database
+- Canonical production domain set in `NEXT_PUBLIC_APP_URL`
+
+If `FAL_KEY` is missing on a deployment, the app now intentionally presents a paused state and blocks checkout until generation is actually available.

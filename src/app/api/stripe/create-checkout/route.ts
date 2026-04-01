@@ -40,6 +40,17 @@ const PLAN_TO_STRIPE_PRICE_ID: Record<string, string> = {
 };
 
 export async function POST(request: NextRequest) {
+  const falKey = process.env.FAL_KEY;
+  if (!falKey) {
+    return NextResponse.json(
+      {
+        error:
+          "Image generation is not configured on this deployment yet. Checkout is paused until the service is live.",
+      },
+      { status: 503 }
+    );
+  }
+
   // Guard: Stripe secret key must be present at request time.
   // We intentionally do NOT read this at module load time — that would crash
   // next build when the env var isn't injected (CI, fresh clones, preview deploys).
@@ -92,7 +103,9 @@ export async function POST(request: NextRequest) {
   // Build success and cancel URLs.
   // Token appended to success_url so the client-side component can read it from
   // URLSearchParams and persist to localStorage("productphoto_pro_token").
-  const successUrl = `${appUrl}/success?plan=${encodeURIComponent(plan)}&token=${encodeURIComponent(subscriptionToken)}`;
+  const successUrl =
+    `${appUrl}/?checkout=success&plan=${encodeURIComponent(plan)}` +
+    `&token=${encodeURIComponent(subscriptionToken)}`;
   const cancelUrl = `${appUrl}/#pricing`;
 
   // Construct the form-encoded body for the Stripe Checkout Session API.

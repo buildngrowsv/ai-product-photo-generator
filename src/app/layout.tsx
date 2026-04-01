@@ -18,7 +18,13 @@
  * Migrated 2026-03-24 as part of i18n rollout (pane1774 T13).
  */
 import type { ReactNode } from "react";
+import { default as GoogleAnalyticsLoader } from "@/components/GoogleAnalytics";
 
 export default function RootLayout({ children }: { children: ReactNode }) {
-  return children;
+  return (
+    <>
+      <GoogleAnalyticsLoader />
+      {children}
+    </>
+  );
 }

@@ -20,7 +20,7 @@
  * WHAT IS NOT TESTED HERE (deliberately):
  * - Actual fal.ai calls (require FAL_KEY, cost money)
  * - Frontend React rendering (requires a running Next.js dev server)
- * - End-to-end flows (see tests/e2e/ for Playwright tests)
+ * - End-to-end flows (see e2e/ for Playwright tests)
  *
  * HOW TO RUN:
  *   npm test

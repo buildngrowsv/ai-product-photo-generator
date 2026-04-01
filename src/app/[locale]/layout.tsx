@@ -37,7 +37,7 @@ import { routing } from "@/i18n/routing";
 import "../globals.css";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { GoogleAnalytics } from "@next/third-parties/google";
+import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 
 /**
  * Production URL — used for canonical and hreflang alternates.
@@ -224,9 +224,9 @@ export default async function LocaleLayout({
         />
       </head>
       <body className="font-sans antialiased bg-gray-950 text-white min-h-screen">
-        {/* GA4 — conditionally rendered; set NEXT_PUBLIC_GA_ID in Vercel env to activate */}
-        {process.env.NEXT_PUBLIC_GA_ID && (
-          <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
+        {/* GA4 — conditionally rendered; set NEXT_PUBLIC_GA_MEASUREMENT_ID in Vercel env to activate */}
+        {process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID && (
+          <GoogleAnalytics trackingId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID!} />
         )}
         <LanguageSwitcher locale={locale} />
         {/*

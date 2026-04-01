@@ -26,6 +26,9 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { ProductPhotoProCheckoutButton } from "@/components/ProductPhotoProCheckoutButton";
+import { useDailyUseTracker } from "@/hooks/useDailyUseTracker";
+import { UpgradeModal } from "@/components/conversion/UpgradeModal";
+import { EmailCaptureModal } from "@/components/conversion/EmailCaptureModal";
 import {
   Upload,
   Sparkles,

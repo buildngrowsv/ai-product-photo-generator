@@ -15,7 +15,7 @@
  * version and re-enable the plugin below.
  *
  * EXCLUDE:
- * - tests/e2e/** — Playwright tests; run via `npx playwright test`, not vitest
+ * - e2e/** — Playwright tests; run via `npx playwright test`, not vitest
  *
  * HOW TO RUN:
  *   npm test           -- run all tests once
@@ -29,7 +29,7 @@ export default defineConfig({
     environment: "jsdom",
     globals: true,
     // Exclude Playwright e2e tests — they require a running server and use @playwright/test API
-    exclude: ["tests/e2e/**", "node_modules/**"],
+    exclude: ["e2e/**", "node_modules/**"],
   },
   resolve: {
     alias: {

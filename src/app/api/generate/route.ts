@@ -105,53 +105,11 @@ export async function POST(request: NextRequest) {
   }
 
   /**
-   * Step 2a: PRO ENTITLEMENT CHECK (T018, 2026-03-26): Check x-pro-token BEFORE IP rate limit.
+   * Step 2: Parse and validate request body.
    *
-   * WHY BEFORE IP RATE LIMIT:
-   * Pro subscribers have paid for unlimited access. Checking their token first means
-   * they never hit the free-tier 429 gate. The IP rate limit is only for anonymous/
-   * free-tier users.
-   *
-   * HOW IT WORKS:
-   * 1. Client stores UUID token in localStorage after successful Stripe checkout
-   *    (token was included in success_url ?token= param by the create-checkout route)
-   * 2. Client sends token in x-pro-token header on every generate request
-   * 3. isProActive() looks up the token in Upstash Redis
-   * 4. If "active" → skip IP rate limit, proceed to fal.ai
-   * 5. If null/pending/absent → fall through to IP rate limit (free-tier path)
-   *
-   * GRACEFUL DEGRADATION:
-   * If Upstash is not configured, isProActive() returns false for all tokens.
-   * Free-tier users are unaffected. Pro users temporarily downgraded to free tier
-   * until UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN are set on Vercel.
-   *
-   * See: src/lib/subscription-store.ts for the full token lifecycle docs.
-   */
-  const proToken = request.headers.get("x-pro-token");
-  const isUserProSubscriber = await isProActive(proToken);
-
-  /**
-   * Step 2b: Rate limit check — only for free-tier users.
-   * Pro subscribers bypass this gate entirely via the token check above.
-   * Prevent abuse — durable Upstash Redis sliding-window (wave-2 hardening 2026-03-27).
-   * Falls back to in-memory if UPSTASH env vars are not set.
-   */
-  if (!isUserProSubscriber) {
-    const _clientIp = extractClientIpAddress(request);
-    const _rateLimitResult = await checkIpRateLimit(_clientIp);
-    if (!_rateLimitResult.allowed) {
-      return NextResponse.json(
-        {
-          error: "Rate limited",
-          message: "Too many requests. Please wait a minute before generating again.",
-        },
-        { status: 429 }
-      );
-    }
-  }
-
-  /**
-   * Step 3: Parse and validate request body.
+   * Validation runs before rate limiting because malformed requests never reach
+   * fal.ai and should fail with a deterministic 400 rather than consuming or
+   * being blocked by the free-tier budget gate.
    */
   let body: { imageBase64?: string; stylePrompt?: string };
   try {
@@ -200,6 +158,52 @@ export async function POST(request: NextRequest) {
       { error: "Prompt too long", message: `Style description must be under ${MAX_PROMPT_LENGTH_CHARS} characters.` },
       { status: 400 }
     );
+  }
+
+  /**
+   * Step 3a: PRO ENTITLEMENT CHECK (T018, 2026-03-26): Check x-pro-token BEFORE IP rate limit.
+   *
+   * WHY BEFORE IP RATE LIMIT:
+   * Pro subscribers have paid for unlimited access. Checking their token first means
+   * they never hit the free-tier 429 gate. The IP rate limit is only for anonymous/
+   * free-tier users.
+   *
+   * HOW IT WORKS:
+   * 1. Client stores UUID token in localStorage after successful Stripe checkout
+   *    (token was included in success_url ?token= param by the create-checkout route)
+   * 2. Client sends token in x-pro-token header on every generate request
+   * 3. isProActive() looks up the token in Upstash Redis
+   * 4. If "active" → skip IP rate limit, proceed to fal.ai
+   * 5. If null/pending/absent → fall through to IP rate limit (free-tier path)
+   *
+   * GRACEFUL DEGRADATION:
+   * If Upstash is not configured, isProActive() returns false for all tokens.
+   * Free-tier users are unaffected. Pro users temporarily downgraded to free tier
+   * until UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN are set on Vercel.
+   *
+   * See: src/lib/subscription-store.ts for the full token lifecycle docs.
+   */
+  const proToken = request.headers.get("x-pro-token");
+  const isUserProSubscriber = await isProActive(proToken);
+
+  /**
+   * Step 3b: Rate limit check — only for free-tier users.
+   * Pro subscribers bypass this gate entirely via the token check above.
+   * Prevent abuse — durable Upstash Redis sliding-window (wave-2 hardening 2026-03-27).
+   * Falls back to in-memory if UPSTASH env vars are not set.
+   */
+  if (!isUserProSubscriber) {
+    const _clientIp = extractClientIpAddress(request);
+    const _rateLimitResult = await checkIpRateLimit(_clientIp);
+    if (!_rateLimitResult.allowed) {
+      return NextResponse.json(
+        {
+          error: "Rate limited",
+          message: "Too many requests. Please wait a minute before generating again.",
+        },
+        { status: 429 }
+      );
+    }
   }
 
   /**

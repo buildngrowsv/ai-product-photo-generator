@@ -29,16 +29,24 @@ interface ProductPhotoProCheckoutButtonProps {
   label: string;
   /** Optional className for styling */
   className?: string;
+  /** Fail-closed switch when checkout should not be available */
+  disabled?: boolean;
+  /** Optional explanatory copy shown under a disabled button */
+  disabledReason?: string | null;
 }
 
 export function ProductPhotoProCheckoutButton({
   label,
   className = "",
+  disabled = false,
+  disabledReason = null,
 }: ProductPhotoProCheckoutButtonProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function handleClick() {
+    if (disabled) return;
+
     setError(null);
     setLoading(true);
     try {
@@ -65,11 +73,14 @@ export function ProductPhotoProCheckoutButton({
       <button
         type="button"
         onClick={handleClick}
-        disabled={loading}
+        disabled={loading || disabled}
         className={`w-full py-3 rounded-xl font-semibold text-white transition-all disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
       >
         {loading ? "Redirecting to checkout…" : label}
       </button>
+      {disabled && disabledReason ? (
+        <p className="text-xs text-amber-300 text-center">{disabledReason}</p>
+      ) : null}
       {error ? (
         <p className="text-xs text-red-400 text-center">{error}</p>
       ) : null}

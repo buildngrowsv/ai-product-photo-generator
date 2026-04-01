@@ -1,0 +1,151 @@
+
+> ai-product-photo-generator@0.1.0 test:e2e
+> npx playwright test --reporter=list
+
+[WebServer] ⚠ Invalid next.config.ts options detected: 
+[WebServer] ⚠     Unrecognized key(s) in object: 'turbo' at "experimental"
+[WebServer] ⚠ See more info here: https://nextjs.org/docs/messages/invalid-next-config
+
+Running 10 tests using 2 workers
+
+(node:30686) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:30685) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] ⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+(node:30686) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:30685) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] Deprecation warning: `useLocale` has returned a default from `useParams().locale` since no `NextIntlClientProvider` ancestor was found for the calling component. This behavior will be removed in the next major version. Please ensure all Client Components that use `next-intl` are wrapped in a `NextIntlClientProvider`.
+[WebServer] ⚠ Blocked cross-origin request to Next.js dev resource /_next/webpack-hmr from "127.0.0.1".
+[WebServer] Cross-origin access to Next.js dev resources is blocked by default for safety.
+[WebServer] 
+[WebServer] To allow this host in development, add it to "allowedDevOrigins" in next.config.js and restart the dev server:
+[WebServer] 
+[WebServer] // next.config.js
+[WebServer] module.exports = {
+[WebServer]   allowedDevOrigins: ['127.0.0.1'],
+[WebServer] }
+[WebServer] 
+[WebServer] Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
+  ✓   1 [chromium] › e2e/01-core-tool.spec.ts:23:7 › PhotoForge — home and core tool › upload and checkout controls reflect whether generation is live (9.4s)
+  ✓   2 [chromium] › e2e/01-core-tool.spec.ts:12:7 › PhotoForge — home and core tool › homepage loads and surfaces the primary product photo tool (8.8s)
+  ✓   4 [chromium] › e2e/02-extended.spec.ts:49:7 › PhotoForge — pricing and extended pages › privacy and terms pages render policy headings (4.5s)
+  ✓   5 [chromium] › e2e/02-extended.spec.ts:59:7 › PhotoForge — pricing and extended pages › refunds page explains Stripe-backed refunds (1.6s)
+  ✓   6 [chromium] › e2e/02-extended.spec.ts:67:7 › PhotoForge — pricing and extended pages › Spanish locale pricing route responds (1.5s)
+  ✓   7 [chromium] › e2e/03-checkout-api.spec.ts:17:7 › PhotoForge — checkout API › runtime-status exposes falConfigured boolean (51ms)
+  ✓   8 [chromium] › e2e/03-checkout-api.spec.ts:24:7 › PhotoForge — checkout API › generate route applies runtime guard before payload validation (518ms)
+  ✓   9 [chromium] › e2e/03-checkout-api.spec.ts:40:7 › PhotoForge — checkout API › POST /api/stripe/create-checkout matches deployment capability (89ms)
+  ✓  10 [chromium] › e2e/03-checkout-api.spec.ts:58:7 › PhotoForge — checkout API › POST /api/stripe/checkout alias matches create-checkout (82ms)
+  ✘   3 [chromium] › e2e/02-extended.spec.ts:11:7 › PhotoForge — pricing and extended pages › pricing page shows tiers and checkout messaging aligned with runtime (22.5s)
+(node:32724) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:32724) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  11 [chromium] › e2e/02-extended.spec.ts:11:7 › PhotoForge — pricing and extended pages › pricing page shows tiers and checkout messaging aligned with runtime (retry #1) (23.0s)
+(node:34595) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:34595) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  12 [chromium] › e2e/02-extended.spec.ts:11:7 › PhotoForge — pricing and extended pages › pricing page shows tiers and checkout messaging aligned with runtime (retry #2) (22.0s)
+
+
+  1) [chromium] › e2e/02-extended.spec.ts:11:7 › PhotoForge — pricing and extended pages › pricing page shows tiers and checkout messaging aligned with runtime 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByRole('button', { name: /Upgrade to Pro|Checkout Paused Until Generation Is Live/ })
+    Expected: visible
+    Timeout: 20000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 20000ms[22m
+    [2m  - waiting for getByRole('button', { name: /Upgrade to Pro|Checkout Paused Until Generation Is Live/ })[22m
+
+
+      23 |         name: /Upgrade to Pro|Checkout Paused Until Generation Is Live/,
+      24 |       })
+    > 25 |     ).toBeVisible({ timeout: 20_000 });
+         |       ^
+      26 |
+      27 |     await expect(page.getByText(/^Free$/i)).toBeVisible();
+      28 |     await expect(page.getByText(/^Pro$/i)).toBeVisible();
+        at /Users/ak/UserRoot/Github/ai-product-photo-generator/e2e/02-extended.spec.ts:25:7
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/02-extended-PhotoForge-—-p-dc139-saging-aligned-with-runtime-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/02-extended-PhotoForge-—-p-dc139-saging-aligned-with-runtime-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByRole('button', { name: /Upgrade to Pro|Checkout Paused Until Generation Is Live/ })
+    Expected: visible
+    Timeout: 20000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 20000ms[22m
+    [2m  - waiting for getByRole('button', { name: /Upgrade to Pro|Checkout Paused Until Generation Is Live/ })[22m
+
+
+      23 |         name: /Upgrade to Pro|Checkout Paused Until Generation Is Live/,
+      24 |       })
+    > 25 |     ).toBeVisible({ timeout: 20_000 });
+         |       ^
+      26 |
+      27 |     await expect(page.getByText(/^Free$/i)).toBeVisible();
+      28 |     await expect(page.getByText(/^Pro$/i)).toBeVisible();
+        at /Users/ak/UserRoot/Github/ai-product-photo-generator/e2e/02-extended.spec.ts:25:7
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/02-extended-PhotoForge-—-p-dc139-saging-aligned-with-runtime-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/02-extended-PhotoForge-—-p-dc139-saging-aligned-with-runtime-chromium-retry1/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/02-extended-PhotoForge-—-p-dc139-saging-aligned-with-runtime-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/02-extended-PhotoForge-—-p-dc139-saging-aligned-with-runtime-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Retry #2 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByRole('button', { name: /Upgrade to Pro|Checkout Paused Until Generation Is Live/ })
+    Expected: visible
+    Timeout: 20000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 20000ms[22m
+    [2m  - waiting for getByRole('button', { name: /Upgrade to Pro|Checkout Paused Until Generation Is Live/ })[22m
+
+
+      23 |         name: /Upgrade to Pro|Checkout Paused Until Generation Is Live/,
+      24 |       })
+    > 25 |     ).toBeVisible({ timeout: 20_000 });
+         |       ^
+      26 |
+      27 |     await expect(page.getByText(/^Free$/i)).toBeVisible();
+      28 |     await expect(page.getByText(/^Pro$/i)).toBeVisible();
+        at /Users/ak/UserRoot/Github/ai-product-photo-generator/e2e/02-extended.spec.ts:25:7
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/02-extended-PhotoForge-—-p-dc139-saging-aligned-with-runtime-chromium-retry2/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/02-extended-PhotoForge-—-p-dc139-saging-aligned-with-runtime-chromium-retry2/error-context.md
+
+  1 failed
+    [chromium] › e2e/02-extended.spec.ts:11:7 › PhotoForge — pricing and extended pages › pricing page shows tiers and checkout messaging aligned with runtime 
+  9 passed (1.9m)

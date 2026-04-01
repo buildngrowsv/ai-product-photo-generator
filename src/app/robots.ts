@@ -13,7 +13,9 @@
 
 import type { MetadataRoute } from "next";
 
-const BASE_URL = "https://ai-product-photo-generator.vercel.app";
+const BASE_URL = (
+  process.env.NEXT_PUBLIC_APP_URL || "https://product-photo.symplyai.io"
+).replace(/\/$/, "");
 
 export default function robots(): MetadataRoute.Robots {
   return {
