@@ -149,6 +149,7 @@ export async function generateMetadata({
   const t = await getTranslations({ locale, namespace: "Meta" });
 
   return {
+    verification: { google: "EvH1LfFf_PO3s16leLnD-OJjSDYeGdXpvZlk_xT5ht8" },
     title: t("title"),
     description: t("description"),
     keywords: [
