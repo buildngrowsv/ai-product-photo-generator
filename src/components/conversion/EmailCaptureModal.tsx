@@ -21,6 +21,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { X } from "lucide-react";
+import { trackEmailCaptureSubmitted } from "@/lib/analytics/ga4-web-events";
 
 interface EmailCaptureModalProps {
   open: boolean;
@@ -86,6 +87,7 @@ export function EmailCaptureModal({ open, onEmailCaptured, onDismiss }: EmailCap
     setIsSubmitting(true);
 
     try {
+      trackEmailCaptureSubmitted();
       await fetch("/api/email-capture", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

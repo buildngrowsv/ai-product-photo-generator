@@ -22,7 +22,8 @@
  * Builder 9 (2026-03-25, T-productphoto-stripe).
  */
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { trackBeginCheckout, trackViewPricing } from "@/lib/analytics/ga4-web-events";
 
 interface ProductPhotoProCheckoutButtonProps {
   /** Text label shown on the button */
@@ -44,12 +45,17 @@ export function ProductPhotoProCheckoutButton({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    trackViewPricing();
+  }, []);
+
   async function handleClick() {
     if (disabled) return;
 
     setError(null);
     setLoading(true);
     try {
+      trackBeginCheckout("pricing_section", process.env.NEXT_PUBLIC_STRIPE_PRICE_ID_PRO);
       const res = await fetch("/api/stripe/create-checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

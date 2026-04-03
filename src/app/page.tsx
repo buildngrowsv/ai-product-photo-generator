@@ -30,6 +30,11 @@ import { useDailyUseTracker } from "@/hooks/useDailyUseTracker";
 import { UpgradeModal } from "@/components/conversion/UpgradeModal";
 import { EmailCaptureModal } from "@/components/conversion/EmailCaptureModal";
 import {
+  trackProductPhotoCompleted,
+  trackProductPhotoDownloaded,
+  trackProductPhotoRequested,
+} from "@/lib/analytics/ga4-web-events";
+import {
   Upload,
   Sparkles,
   Download,
@@ -262,6 +267,7 @@ export default function PhotoForgeAILandingPage() {
     setIsGeneratingPhoto(true);
     setGenerationErrorMessage(null);
     setGeneratedPhotoUrl(null);
+    trackProductPhotoRequested();
 
     try {
       const response = await fetch("/api/generate", {
@@ -293,6 +299,7 @@ export default function PhotoForgeAILandingPage() {
         const newCount = getTodayPhotoForgeUsageCount();
         setTodayUsageCount(newCount);
         setHasReachedDailyLimit(newCount >= DAILY_FREE_GENERATION_LIMIT);
+        trackProductPhotoCompleted();
       }
     } catch (error) {
       console.error("[PhotoForge] Generation error:", error);
@@ -478,6 +485,7 @@ export default function PhotoForgeAILandingPage() {
                       target="_blank"
                       rel="noopener noreferrer"
                       className="w-full py-3 rounded-xl font-medium text-white bg-green-600 hover:bg-green-500 transition-colors flex items-center justify-center gap-2"
+                      onClick={trackProductPhotoDownloaded}
                     >
                       <Download className="h-5 w-5" />
                       Download Photo
@@ -716,6 +724,8 @@ export default function PhotoForgeAILandingPage() {
             </div>
             <p className="text-center text-sm text-gray-500 md:text-right">
               &copy; {new Date().getFullYear()} PhotoForge AI. Professional product photography powered by AI.
+              {" · "}
+              <a href="https://symplyai.io/tools/" target="_blank" rel="noopener noreferrer" className="hover:text-white/70 transition-colors">Powered by Symply AI</a>
             </p>
           </div>
         </div>
