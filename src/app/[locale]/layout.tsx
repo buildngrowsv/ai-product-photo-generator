@@ -34,6 +34,7 @@ import type { ReactNode } from "react";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
+import CookieConsent from "@/components/CookieConsent";
 import "../globals.css";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
@@ -241,6 +242,7 @@ export default async function LocaleLayout({
         <NextIntlClientProvider messages={messages}>
           {children}
         </NextIntlClientProvider>
+        <CookieConsent />
       </body>
     </html>
   );
