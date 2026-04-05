@@ -29,7 +29,7 @@ export default defineConfig({
     environment: "jsdom",
     globals: true,
     // Exclude Playwright e2e tests — they require a running server and use @playwright/test API
-    exclude: ["e2e/**", "node_modules/**"],
+    exclude: ["**/node_modules/**", "**/dist/**", "e2e/**", "tests/e2e/**", "tests/smoke/**", "docs/demo/**/*.spec.ts"],
   },
   resolve: {
     alias: {
