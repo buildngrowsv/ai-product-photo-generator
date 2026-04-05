@@ -35,10 +35,11 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import CookieConsent from "@/components/CookieConsent";
+import { CookieConsentBanner } from "@/components/CookieConsentBanner";
 import "../globals.css";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { GoogleAnalytics } from "@/components/GoogleAnalytics";
+import GoogleAnalyticsLoader from "@/components/GoogleAnalytics";
 
 /**
  * Production URL — used for canonical and hreflang alternates.
@@ -226,10 +227,8 @@ export default async function LocaleLayout({
         />
       </head>
       <body className="font-sans antialiased bg-gray-950 text-white min-h-screen">
-        {/* GA4 — conditionally rendered; set NEXT_PUBLIC_GA_MEASUREMENT_ID in Vercel env to activate */}
-        {process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID && (
-          <GoogleAnalytics trackingId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID!} />
-        )}
+        {/* GA4 with consent mode — GoogleAnalyticsLoader reads env var internally */}
+        <GoogleAnalyticsLoader />
         <LanguageSwitcher locale={locale} />
         {/*
          * NextIntlClientProvider wraps the entire app so that client
@@ -242,6 +241,7 @@ export default async function LocaleLayout({
         <NextIntlClientProvider messages={messages}>
           {children}
         </NextIntlClientProvider>
+        <CookieConsentBanner />
         <CookieConsent />
       </body>
     </html>
