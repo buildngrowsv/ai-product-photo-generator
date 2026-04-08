@@ -25,7 +25,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
 
   // Guard: if the URL doesn't include a valid locale segment (e.g. direct
   // API hits, bots), fall back to the default to avoid runtime errors.
-  if (!locale || !routing.locales.includes(locale as "en" | "es")) {
+  if (!locale || !routing.locales.includes(locale as "en" | "es" | "fr" | "de" | "pt")) {
     locale = routing.defaultLocale;
   }
 
