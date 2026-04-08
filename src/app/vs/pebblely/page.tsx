@@ -49,6 +49,7 @@ export const metadata: Metadata = {
       "Free to start, $9.90/mo unlimited vs $19/mo. Compare PhotoForge AI with Pebblely for AI-powered product photography.",
     url: "https://aiproductphotomaker.com/vs/pebblely",
     type: "website",
+    images: [{ url: "/opengraph-image", width: 1200, height: 630 }],
   },
 };
 

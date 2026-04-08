@@ -8,10 +8,23 @@
  * Required for directory submissions (Futurepedia, There's An AI For That, etc.)
  */
 
+const SITE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://aiproductphotomaker.com";
+
 export const metadata = {
   title: "Refund Policy | AI Product Photo Generator",
   description:
     "Refund and cancellation policy for AI Product Photo Generator powered by SymplyAI.",
+  alternates: {
+    canonical: `${SITE_URL}/refund-policy`,
+  },
+  openGraph: {
+    title: "Refund Policy | AI Product Photo Generator",
+    description:
+      "Refund and cancellation policy for AI Product Photo Generator powered by SymplyAI.",
+    url: `${SITE_URL}/refund-policy`,
+    type: "website",
+    images: [{ url: "/opengraph-image", width: 1200, height: 630 }],
+  },
 };
 
 export default function RefundPolicyPage() {

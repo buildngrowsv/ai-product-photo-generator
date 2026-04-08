@@ -5,10 +5,23 @@
  */
 import type { Metadata } from "next";
 
+const SITE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://aiproductphotomaker.com";
+
 export const metadata: Metadata = {
   title: "Refund Policy | PhotoForge AI",
   description:
     "Refund and cancellation policy for PhotoForge AI subscriptions and billing disputes.",
+  alternates: {
+    canonical: `${SITE_URL}/refunds`,
+  },
+  openGraph: {
+    title: "Refund Policy | PhotoForge AI",
+    description:
+      "Refund and cancellation policy for PhotoForge AI subscriptions and billing disputes.",
+    url: `${SITE_URL}/refunds`,
+    type: "website",
+    images: [{ url: "/opengraph-image", width: 1200, height: 630 }],
+  },
 };
 
 export default function RefundsPage() {

@@ -15,12 +15,22 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+const SITE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://aiproductphotomaker.com";
+
 export const metadata: Metadata = {
   title: "PhotoForge AI vs Competitors — Product Photo Generator Comparisons",
   description:
     "See how PhotoForge AI compares to Photoroom, Pebblely, and other popular AI product photography tools. Honest feature, pricing, and quality comparisons.",
   alternates: {
-    canonical: "https://aiproductphotomaker.com/vs",
+    canonical: `${SITE_URL}/vs`,
+  },
+  openGraph: {
+    title: "PhotoForge AI vs Competitors — Product Photo Generator Comparisons",
+    description:
+      "See how PhotoForge AI compares to Photoroom, Pebblely, and other popular AI product photography tools. Honest feature, pricing, and quality comparisons.",
+    url: `${SITE_URL}/vs`,
+    type: "website",
+    images: [{ url: "/opengraph-image", width: 1200, height: 630 }],
   },
 };
 

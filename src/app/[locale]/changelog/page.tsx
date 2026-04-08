@@ -9,11 +9,21 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+const SITE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://aiproductphotomaker.com";
+
 export const metadata: Metadata = {
   title: "Changelog — What's New | PhotoForge AI",
   description:
     "See the latest features, improvements, and fixes in PhotoForge AI. Updated regularly with new AI models and product photography tools.",
-  alternates: { canonical: "https://aiproductphotomaker.com/changelog" },
+  alternates: { canonical: `${SITE_URL}/changelog` },
+  openGraph: {
+    title: "Changelog — What's New | PhotoForge AI",
+    description:
+      "See the latest features, improvements, and fixes in PhotoForge AI. Updated regularly with new AI models and product photography tools.",
+    url: `${SITE_URL}/changelog`,
+    type: "website",
+    images: [{ url: "/opengraph-image", width: 1200, height: 630 }],
+  },
 };
 
 const CHANGELOG_ENTRIES = [

@@ -16,10 +16,23 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+const SITE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://aiproductphotomaker.com";
+
 export const metadata: Metadata = {
   title: "About | AI Product Photo Generator",
   description:
     "Learn about AI Product Photo Generator — transform basic product images into professional studio-quality photos with AI-generated backgrounds and lighting.",
+  alternates: {
+    canonical: `${SITE_URL}/about`,
+  },
+  openGraph: {
+    title: "About | AI Product Photo Generator",
+    description:
+      "Learn about AI Product Photo Generator — transform basic product images into professional studio-quality photos with AI-generated backgrounds and lighting.",
+    url: `${SITE_URL}/about`,
+    type: "website",
+    images: [{ url: "/opengraph-image", width: 1200, height: 630 }],
+  },
 };
 
 export default function AboutPage() {

@@ -8,10 +8,23 @@
 import type { Metadata } from "next";
 import PricingClient from "./PricingClient";
 
+const SITE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://aiproductphotomaker.com";
+
 export const metadata: Metadata = {
   title: "Pricing | PhotoForge AI",
   description:
     "Free tier and Pro plan for AI product photo generation — upgrade for unlimited studio-quality output.",
+  alternates: {
+    canonical: `${SITE_URL}/pricing`,
+  },
+  openGraph: {
+    title: "Pricing | PhotoForge AI",
+    description:
+      "Free tier and Pro plan for AI product photo generation — upgrade for unlimited studio-quality output.",
+    url: `${SITE_URL}/pricing`,
+    type: "website",
+    images: [{ url: "/opengraph-image", width: 1200, height: 630 }],
+  },
 };
 
 export default function PricingPage() {

@@ -50,6 +50,7 @@ export const metadata: Metadata = {
       "Free to start, no watermarks, browser-based. Compare PhotoForge AI with Photoroom for AI-powered product photography.",
     url: "https://aiproductphotomaker.com/vs/photoroom",
     type: "website",
+    images: [{ url: "/opengraph-image", width: 1200, height: 630 }],
   },
 };
 

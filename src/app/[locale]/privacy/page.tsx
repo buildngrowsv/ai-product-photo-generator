@@ -9,10 +9,23 @@
  */
 import type { Metadata } from "next";
 
+const SITE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://aiproductphotomaker.com";
+
 export const metadata: Metadata = {
   title: "Privacy Policy | PhotoForge AI",
   description:
     "How PhotoForge AI collects, uses, and protects product images, billing data, and analytics information.",
+  alternates: {
+    canonical: `${SITE_URL}/privacy`,
+  },
+  openGraph: {
+    title: "Privacy Policy | PhotoForge AI",
+    description:
+      "How PhotoForge AI collects, uses, and protects product images, billing data, and analytics information.",
+    url: `${SITE_URL}/privacy`,
+    type: "website",
+    images: [{ url: "/opengraph-image", width: 1200, height: 630 }],
+  },
 };
 
 export default function PrivacyPage() {

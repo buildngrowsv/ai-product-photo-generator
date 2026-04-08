@@ -27,6 +27,8 @@ import Link from "next/link";
 /*  SEO Metadata                                                              */
 /* -------------------------------------------------------------------------- */
 
+const SITE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://aiproductphotomaker.com";
+
 export const metadata: Metadata = {
   title: "FAQ | AI Product Photo Generator — Common Questions Answered",
   description:
@@ -40,7 +42,15 @@ export const metadata: Metadata = {
     "product photography tool FAQ",
   ],
   alternates: {
-    canonical: "https://aiproductphotomaker.com/faq",
+    canonical: `${SITE_URL}/faq`,
+  },
+  openGraph: {
+    title: "FAQ | AI Product Photo Generator — Common Questions Answered",
+    description:
+      "Frequently asked questions about AI Product Photo Generator. Learn how AI product photography works, supported products, background options, commercial use, and pricing.",
+    url: `${SITE_URL}/faq`,
+    type: "website",
+    images: [{ url: "/opengraph-image", width: 1200, height: 630 }],
   },
 };
 
