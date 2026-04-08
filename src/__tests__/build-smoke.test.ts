@@ -89,4 +89,14 @@ describe("Build smoke tests — ai-product-photo-generator", () => {
     // Clean up so subsequent tests start clean
     delete process.env.FAL_KEY;
   });
+
+  it("should import the SEO landing pages without throwing", async () => {
+    const shopifyPage = await import("../app/[locale]/shopify-product-photos/page");
+    const amazonPage = await import("../app/[locale]/amazon-product-photos/page");
+    const photoroomPage = await import("../app/[locale]/photoroom-alternative/page");
+
+    expect(typeof shopifyPage.default).toBe("function");
+    expect(typeof amazonPage.default).toBe("function");
+    expect(typeof photoroomPage.default).toBe("function");
+  });
 });

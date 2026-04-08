@@ -72,4 +72,29 @@ test.describe("PhotoForge — pricing and extended pages", () => {
     expect(response?.status()).toBe(200);
     await expect(page.getByText(/\$11\.99/i)).toBeVisible();
   });
+
+  test("guide route serves the AI product photography article", async ({ page }) => {
+    const response = await page.goto("/guide/ai-product-photography");
+    expect(response?.status()).toBe(200);
+
+    await expect(
+      page.getByRole("heading", {
+        name: /How to Create Professional Product Photos with AI in 2026/i,
+      })
+    ).toBeVisible();
+    await expect(page.getByText(/AI product photography vs hiring a photographer/i)).toBeVisible();
+    await expect(page.getByRole("link", { name: /Try PhotoForge AI/i })).toBeVisible();
+  });
+
+  test("SEO landing pages for Shopify, Amazon, and alternatives respond", async ({ page }) => {
+    for (const [route, heading] of [
+      ["/shopify-product-photos", /AI Product Photography for Shopify Stores/i],
+      ["/amazon-product-photos", /Amazon Product Photo Generator/i],
+      ["/photoroom-alternative", /Photoroom Alternative/i],
+    ] as const) {
+      const response = await page.goto(route);
+      expect(response?.status()).toBe(200);
+      await expect(page.getByRole("heading", { level: 1, name: heading })).toBeVisible();
+    }
+  });
 });
