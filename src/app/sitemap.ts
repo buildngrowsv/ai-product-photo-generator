@@ -17,7 +17,7 @@
 import type { MetadataRoute } from "next";
 
 const BASE_URL = (
-  process.env.NEXT_PUBLIC_APP_URL || "https://product-photo.symplyai.io"
+  process.env.NEXT_PUBLIC_APP_URL?.trim() || "https://aiproductphotomaker.com"
 ).replace(/\/$/, "");
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -33,6 +33,36 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.9,
+    },
+    {
+      url: `${BASE_URL}/guide/ai-product-photography`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: `${BASE_URL}/faq`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
+      url: `${BASE_URL}/shopify-product-photos`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: `${BASE_URL}/amazon-product-photos`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: `${BASE_URL}/photoroom-alternative`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
     },
     {
       url: `${BASE_URL}/privacy`,
