@@ -46,7 +46,7 @@ import GoogleAnalyticsLoader from "@/components/GoogleAnalytics";
  * Change this when a custom domain (e.g. productphotos.symplyai.io) is set.
  */
 const siteUrl = (
-  process.env.NEXT_PUBLIC_APP_URL || "https://product-photo.symplyai.io"
+  process.env.NEXT_PUBLIC_APP_URL?.trim() || "https://aiproductphotomaker.com"
 ).replace(/\/$/, "");
 
 /**
@@ -151,6 +151,7 @@ export async function generateMetadata({
   const t = await getTranslations({ locale, namespace: "Meta" });
 
   return {
+    metadataBase: new URL(siteUrl),
     verification: { google: "EvH1LfFf_PO3s16leLnD-OJjSDYeGdXpvZlk_xT5ht8" },
     title: t("title"),
     description: t("description"),
