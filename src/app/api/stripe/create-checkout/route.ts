@@ -78,10 +78,10 @@ export async function POST(request: NextRequest) {
 
   // Derive the base URL for success/cancel redirects.
   // On Vercel, NEXT_PUBLIC_APP_URL is set to the canonical domain.
-  // Locally, fall back to the dev server's default port 3000 (no custom port).
+  // Fallback to production domain so Stripe redirects never point to localhost.
   const appUrl =
     process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ||
-    "http://localhost:3000";
+    "https://aiproductphotomaker.com";
 
   // ---------------------------------------------------------------------------
   // PRO ENTITLEMENT TOKEN (T018, 2026-03-26): Generate before Stripe session.
