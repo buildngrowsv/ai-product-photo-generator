@@ -167,11 +167,30 @@ export async function generateMetadata({
       description: t("description"),
       type: "website",
       siteName: "PhotoForge AI",
+      url: siteUrl,
+      /*
+       * og:image — points to the dynamic opengraph-image.tsx at src/app/opengraph-image.tsx.
+       * Next.js resolves relative paths against metadataBase (siteUrl above).
+       * Without this explicit images array, the locale layout's openGraph block
+       * shadows/overrides the file-based opengraph-image.tsx, causing no og:image tag
+       * to appear in the rendered HTML. Adding it explicitly here fixes the social
+       * sharing preview that was showing blank on Twitter/LinkedIn/Slack.
+       * Identified as missing during fleet audit 2026-04-08 (PARTIAL og:image on aiproductphotomaker.com).
+       */
+      images: [
+        {
+          url: "/opengraph-image",
+          width: 1200,
+          height: 630,
+          alt: "PhotoForge AI — Studio-quality AI product photos for ecommerce",
+        },
+      ],
     },
     twitter: {
       card: "summary_large_image",
       title: t("title"),
       description: t("description"),
+      images: ["/opengraph-image"],
     },
     alternates: {
       canonical: siteUrl,
