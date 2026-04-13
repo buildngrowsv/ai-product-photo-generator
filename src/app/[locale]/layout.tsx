@@ -96,26 +96,50 @@ const jsonLdFaqData = {
   "mainEntity": [
     {
       "@type": "Question",
+      "name": "How does PhotoForge AI compare to Photoroom?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "PhotoForge AI offers a similar AI-powered product photo experience to Photoroom but at a lower price point ($9.90/mo vs Photoroom's $12.99/mo Pro plan). Both tools remove backgrounds and generate professional scenes, but PhotoForge AI includes 3 free photos with no signup required — great for sellers who want to test before committing. Photoroom has a larger template library, while PhotoForge AI focuses on speed and simplicity for marketplace sellers.",
+      },
+    },
+    {
+      "@type": "Question",
+      "name": "Can I use PhotoForge AI for Amazon product photos?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Absolutely. PhotoForge AI generates high-resolution product images that meet Amazon's image requirements, including pure white backgrounds (Amazon's main image standard) and lifestyle scenes for secondary images. Many Amazon FBA sellers use PhotoForge AI to create professional listings without hiring a product photographer — saving $50-200 per product in photography costs.",
+      },
+    },
+    {
+      "@type": "Question",
+      "name": "How long does product photo generation take?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Most product photos are generated in 10-30 seconds. Upload your product image, choose a background style or scene, and the AI delivers a studio-quality result almost instantly. Batch processing on Pro plans lets you generate multiple variants for A/B testing your marketplace listings.",
+      },
+    },
+    {
+      "@type": "Question",
       "name": "Is PhotoForge AI free to use?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Yes! PhotoForge AI offers 3 free product photos to start. Pro plans at $9.90/month give you unlimited generations for your e-commerce store.",
+        "text": "Yes! PhotoForge AI offers 3 free product photos with no account required. Pro plans at $9.90/month give you unlimited generations, higher resolution outputs, and batch processing — ideal for e-commerce stores with large catalogs on Amazon, Shopify, or Etsy.",
       },
     },
     {
       "@type": "Question",
-      "name": "What kind of product photos can I create?",
+      "name": "What backgrounds are available for product photos?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "You can create professional e-commerce photos for any product. Upload your product image and AI generates stunning backgrounds — perfect for Amazon, Shopify, Etsy, and other marketplaces.",
+        "text": "PhotoForge AI offers dozens of background options including pure white (Amazon-compliant), lifestyle scenes (kitchen, living room, outdoor), gradient studio backdrops, seasonal themes, and custom color backgrounds. The AI automatically adjusts lighting and shadows to make your product look naturally placed in each scene.",
       },
     },
     {
       "@type": "Question",
-      "name": "Do I need photography equipment?",
+      "name": "Do I need photography equipment or skills?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "No! Just upload a basic product photo taken with any camera or phone. Our AI handles the background, lighting, and composition to create professional-quality results.",
+        "text": "No photography equipment or skills needed. Just upload a basic product photo taken with any smartphone camera. PhotoForge AI handles background removal, relighting, shadow generation, and composition — turning a simple phone snapshot into a professional e-commerce image that competes with $200+ studio photoshoots.",
       },
     },
   ],
