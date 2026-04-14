@@ -27,6 +27,46 @@ export const metadata: Metadata = {
   },
 };
 
+/**
+ * SoftwareApplication + Offer JSON-LD — enables Google rich snippets showing
+ * price and application category in search results for "[product] pricing" queries.
+ */
+const pricingJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "PhotoForge AI",
+  applicationCategory: "DesignApplication",
+  operatingSystem: "Web",
+  url: `${SITE_URL}/pricing`,
+  offers: [
+    {
+      "@type": "Offer",
+      name: "Free",
+      price: "0",
+      priceCurrency: "USD",
+      description: "3 product photos per day",
+      availability: "https://schema.org/InStock",
+    },
+    {
+      "@type": "Offer",
+      name: "Pro",
+      price: "11.99",
+      priceCurrency: "USD",
+      description: "Unlimited product photos, all backgrounds, priority processing",
+      availability: "https://schema.org/InStock",
+      priceValidUntil: "2027-12-31",
+    },
+  ],
+};
+
 export default function PricingPage() {
-  return <PricingClient initialFalConfigured={Boolean(process.env.FAL_KEY)} />;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(pricingJsonLd) }}
+      />
+      <PricingClient initialFalConfigured={Boolean(process.env.FAL_KEY)} />
+    </>
+  );
 }
