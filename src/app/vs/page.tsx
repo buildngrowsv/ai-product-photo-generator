@@ -15,6 +15,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { BreadcrumbJsonLd } from "@/components/BreadcrumbJsonLd";
 const SITE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://aiproductphotomaker.com";
 
 export const metadata: Metadata = {
@@ -60,6 +61,16 @@ const COMPARISONS = [
       "Free tier, no credit card",
     ],
   },
+  {
+    slug: "flair-ai",
+    name: "Flair AI",
+    tagline: "Unlimited product photos vs $25-$190/month with image caps",
+    highlights: [
+      "$9.90/mo unlimited vs $25/mo (250 images)",
+      "No per-image caps or tier upgrades",
+      "Simple upload-and-generate workflow",
+    ],
+  },
 ];
 
 export default function VsIndexPage() {
@@ -67,6 +78,13 @@ export default function VsIndexPage() {
     <main className="min-h-screen bg-gray-950 text-gray-100">
       {/* ── Navigation ── */}
       <nav className="border-b border-gray-800 bg-gray-950/80 backdrop-blur-md">
+        {/* BreadcrumbList JSON-LD — breadcrumb rich snippets in Google SERPs */}
+        <BreadcrumbJsonLd
+          items={[
+            { name: "Home", url: process.env.NEXT_PUBLIC_APP_URL || "" },
+            { name: "Alternatives", url: `${process.env.NEXT_PUBLIC_APP_URL || ""}/vs` },
+          ]}
+        />
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
           <Link href="/" className="flex items-center gap-2">
             <span className="text-2xl">📸</span>

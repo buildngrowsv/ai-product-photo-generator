@@ -11,7 +11,7 @@
  * Pebblely offers AI-generated product photo backgrounds for e-commerce.
  * Pricing: Free tier (40 photos/month), Pro at $19/month (1000 photos), and
  * Premium at $39/month. They also offer a credits-based system. PhotoForge AI
- * offers simpler pricing at $9.90/month unlimited.
+ * offers simpler pricing at $11.99/month unlimited.
  *
  * STRUCTURED DATA:
  * FAQPage JSON-LD for rich results targeting common search queries.
@@ -25,6 +25,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { BreadcrumbJsonLd } from "@/components/BreadcrumbJsonLd";
 // ---------------------------------------------------------------------------
 // Metadata
 // ---------------------------------------------------------------------------
@@ -60,12 +61,12 @@ const FAQ_ITEMS = [
   {
     question: "Is PhotoForge AI a good alternative to Pebblely?",
     answer:
-      "Yes. PhotoForge AI offers AI-generated product photo backgrounds with 3 free photos to start and unlimited Pro at $9.90/month. Pebblely charges $19/month for 1000 photos — almost double the price. Both tools produce professional e-commerce photography, but PhotoForge AI offers simpler pricing and no generation caps on Pro.",
+      "Yes. PhotoForge AI offers AI-generated product photo backgrounds with 3 free photos to start and unlimited Pro at $11.99/month. Pebblely charges $19/month for 1000 photos — almost double the price. Both tools produce professional e-commerce photography, but PhotoForge AI offers simpler pricing and no generation caps on Pro.",
   },
   {
     question: "How much does Pebblely cost?",
     answer:
-      "Pebblely offers a free tier with 40 photos/month. Their Pro plan is $19/month for 1000 photos, and Premium is $39/month for more. PhotoForge AI offers 3 free photos to try and $9.90/month for unlimited generations — significantly more affordable for high-volume sellers.",
+      "Pebblely offers a free tier with 40 photos/month. Their Pro plan is $19/month for 1000 photos, and Premium is $39/month for more. PhotoForge AI offers 3 free photos to try and $11.99/month for unlimited generations — significantly more affordable for high-volume sellers.",
   },
   {
     question: "Which tool produces better product photos?",
@@ -75,7 +76,7 @@ const FAQ_ITEMS = [
   {
     question: "Does PhotoForge AI have generation limits?",
     answer:
-      "On the free tier, you get 3 product photos to try. On Pro ($9.90/month), generations are unlimited — no monthly caps. Pebblely limits Pro users to 1000 photos/month, which can be restrictive for sellers with large catalogs.",
+      "On the free tier, you get 3 product photos to try. On Pro ($11.99/month), generations are unlimited — no monthly caps. Pebblely limits Pro users to 1000 photos/month, which can be restrictive for sellers with large catalogs.",
   },
   {
     question: "Can I use PhotoForge AI for Amazon product photos?",
@@ -110,7 +111,7 @@ const faqJsonLd = {
 // ---------------------------------------------------------------------------
 const COMPARISON_ROWS = [
   { feature: "Price (Free Tier)", ours: "3 free photos, no watermark", theirs: "40 photos/month (free)" },
-  { feature: "Price (Pro)", ours: "$9.90/month unlimited", theirs: "$19/month (1000 photos)" },
+  { feature: "Price (Pro)", ours: "$11.99/month unlimited", theirs: "$19/month (1000 photos)" },
   { feature: "Price (Premium)", ours: "Included in Pro", theirs: "$39/month" },
   { feature: "Generation Limit (Pro)", ours: "Unlimited", theirs: "1000/month" },
   { feature: "Platform", ours: "Browser-based", theirs: "Browser-based" },
@@ -130,6 +131,20 @@ export default function VsPebblelyPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
+
+      {/* BreadcrumbList JSON-LD — breadcrumb rich snippets in Google SERPs */}
+
+      <BreadcrumbJsonLd
+
+        items={[
+
+          { name: "Home", url: "" },
+
+          { name: "Alternatives", url: `${""}/vs` },
+
+        ]}
+
       />
 
       <main className="min-h-screen bg-gray-950 text-gray-100">
@@ -184,7 +199,7 @@ export default function VsPebblelyPage() {
               {
                 icon: "💰",
                 title: "Half the Price",
-                description: "PhotoForge AI Pro is $9.90/month unlimited. Pebblely Pro is $19/month for 1000 photos. For high-volume sellers, that price difference adds up fast.",
+                description: "PhotoForge AI Pro is $11.99/month unlimited. Pebblely Pro is $19/month for 1000 photos. For high-volume sellers, that price difference adds up fast.",
               },
               {
                 icon: "♾️",
@@ -249,7 +264,7 @@ export default function VsPebblelyPage() {
               },
               {
                 title: "Half the Monthly Cost",
-                text: "$9.90/month vs $19/month. Over a year, that is $118 saved — money that goes back into your business. And PhotoForge AI gives you more (unlimited) for less.",
+                text: "$11.99/month vs $19/month. Over a year, that is $118 saved — money that goes back into your business. And PhotoForge AI gives you more (unlimited) for less.",
               },
               {
                 title: "AI-Native Backgrounds",

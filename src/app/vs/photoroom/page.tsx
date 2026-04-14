@@ -11,7 +11,7 @@
  * Photoroom (photoroom.com) is a mobile-first AI photo editing app that
  * specializes in product photography, background removal, and template-based
  * design. Pricing: free with watermarks, Pro at $12.99/month or $69.99/year.
- * PhotoForge AI offers $9.90/month with 3 free product photos to start, no
+ * PhotoForge AI offers $11.99/month with 3 free product photos to start, no
  * watermarks on free tier, and full browser access.
  *
  * STRUCTURED DATA:
@@ -26,6 +26,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { BreadcrumbJsonLd } from "@/components/BreadcrumbJsonLd";
 // ---------------------------------------------------------------------------
 // Metadata
 // ---------------------------------------------------------------------------
@@ -61,12 +62,12 @@ const FAQ_ITEMS = [
   {
     question: "Is PhotoForge AI a good alternative to Photoroom?",
     answer:
-      "Yes. PhotoForge AI offers AI-powered product background generation with 3 free photos to start, no watermarks, and full browser access. While Photoroom is a powerful mobile app with 100M+ downloads, PhotoForge AI provides a simpler, more affordable browser-based alternative at $9.90/month vs Photoroom's $12.99/month.",
+      "Yes. PhotoForge AI offers AI-powered product background generation with 3 free photos to start, no watermarks, and full browser access. While Photoroom is a powerful mobile app with 100M+ downloads, PhotoForge AI provides a simpler, more affordable browser-based alternative at $11.99/month vs Photoroom's $12.99/month.",
   },
   {
     question: "How much does Photoroom cost?",
     answer:
-      "Photoroom offers a free tier with watermarks and limited features. Photoroom Pro costs $12.99/month or $69.99/year. PhotoForge AI offers 3 free product photos without watermarks, and Pro at $9.90/month for unlimited generations.",
+      "Photoroom offers a free tier with watermarks and limited features. Photoroom Pro costs $12.99/month or $69.99/year. PhotoForge AI offers 3 free product photos without watermarks, and Pro at $11.99/month for unlimited generations.",
   },
   {
     question: "Does PhotoForge AI work in the browser?",
@@ -111,7 +112,7 @@ const faqJsonLd = {
 // ---------------------------------------------------------------------------
 const COMPARISON_ROWS = [
   { feature: "Price (Free Tier)", ours: "3 free photos, no watermark", theirs: "Free with watermarks" },
-  { feature: "Price (Pro)", ours: "$9.90/month unlimited", theirs: "$12.99/month ($69.99/year)" },
+  { feature: "Price (Pro)", ours: "$11.99/month unlimited", theirs: "$12.99/month ($69.99/year)" },
   { feature: "Platform", ours: "Any browser (no download)", theirs: "Mobile app + limited web" },
   { feature: "Watermarks (Free)", ours: "No watermarks", theirs: "Watermarked output" },
   { feature: "Background Generation", ours: "AI-generated contextual backgrounds", theirs: "AI backgrounds + templates" },
@@ -131,6 +132,20 @@ export default function VsPhotoroomPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
+
+      {/* BreadcrumbList JSON-LD — breadcrumb rich snippets in Google SERPs */}
+
+      <BreadcrumbJsonLd
+
+        items={[
+
+          { name: "Home", url: "" },
+
+          { name: "Alternatives", url: `${""}/vs` },
+
+        ]}
+
       />
 
       <main className="min-h-screen bg-gray-950 text-gray-100">
@@ -195,7 +210,7 @@ export default function VsPhotoroomPage() {
               {
                 icon: "💰",
                 title: "Lower Pro Price",
-                description: "PhotoForge AI Pro is $9.90/month for unlimited product photos. Photoroom Pro costs $12.99/month or $69.99/year — over 30% more expensive.",
+                description: "PhotoForge AI Pro is $11.99/month for unlimited product photos. Photoroom Pro costs $12.99/month or $69.99/year — over 30% more expensive.",
               },
             ].map((card) => (
               <div key={card.title} className="rounded-2xl border border-gray-800 bg-gray-900/50 p-6">
@@ -254,7 +269,7 @@ export default function VsPhotoroomPage() {
               },
               {
                 title: "Simpler Pricing",
-                text: "$9.90/month for unlimited product photos. No annual lock-in pressure, no feature gates between tiers. Photoroom charges $12.99/month and reserves key features for higher tiers.",
+                text: "$11.99/month for unlimited product photos. No annual lock-in pressure, no feature gates between tiers. Photoroom charges $12.99/month and reserves key features for higher tiers.",
               },
               {
                 title: "AI Background Focus",

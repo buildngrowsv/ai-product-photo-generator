@@ -36,6 +36,7 @@ import {
   trackProductPhotoRequested,
 } from "@/lib/analytics/ga4-web-events";
 import {
+import { SeoInternalLinks } from "@/components/SeoInternalLinks";
   Upload,
   Sparkles,
   Download,
@@ -797,6 +798,14 @@ export default function PhotoForgeAILandingPage() {
             </p>
           </div>
         </div>
+      {/* Internal SEO links — distributes homepage PageRank to pSEO pages */}
+      <section className="py-12 px-6 border-t border-white/5">
+        <div className="max-w-5xl mx-auto">
+          <SeoInternalLinks />
+        </div>
+      </section>
+
+
         <RelatedToolsFooterSection currentSiteUrl="https://aiproductphotomaker.com" />
       </footer>
     </div>
