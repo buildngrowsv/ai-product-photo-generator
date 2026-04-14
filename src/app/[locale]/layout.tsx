@@ -24,12 +24,12 @@
  * Google recommends. They remain in English only for now; the content itself
  * does not need to change for ES pages since it's schema metadata.
  *
- * BUSINESS: Free 3 images → Pro $9.90/mo unlimited. Stripe Payment Link checkout.
+ * BUSINESS: Free 3 images → Pro $11.99/mo unlimited. Stripe Payment Link checkout.
  *
  * Updated 2026-03-24 by Scout 15 / i18n rollout agent.
  */
 
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
@@ -72,7 +72,7 @@ const jsonLdStructuredData = {
     "@type": "Offer",
     "price": "0",
     "priceCurrency": "USD",
-    "description": "Free tier: 3 product photos. Pro: $9.90/month unlimited.",
+    "description": "Free tier: 3 product photos. Pro: $11.99/month unlimited.",
   },
   "featureList": [
     "AI-powered product background generation",
@@ -99,7 +99,7 @@ const jsonLdFaqData = {
       "name": "How does PhotoForge AI compare to Photoroom?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "PhotoForge AI offers a similar AI-powered product photo experience to Photoroom but at a lower price point ($9.90/mo vs Photoroom's $12.99/mo Pro plan). Both tools remove backgrounds and generate professional scenes, but PhotoForge AI includes 3 free photos with no signup required — great for sellers who want to test before committing. Photoroom has a larger template library, while PhotoForge AI focuses on speed and simplicity for marketplace sellers.",
+        "text": "PhotoForge AI offers a similar AI-powered product photo experience to Photoroom but at a lower price point ($11.99/mo vs Photoroom's $12.99/mo Pro plan). Both tools remove backgrounds and generate professional scenes, but PhotoForge AI includes 3 free photos with no signup required — great for sellers who want to test before committing. Photoroom has a larger template library, while PhotoForge AI focuses on speed and simplicity for marketplace sellers.",
       },
     },
     {
@@ -123,7 +123,7 @@ const jsonLdFaqData = {
       "name": "Is PhotoForge AI free to use?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Yes! PhotoForge AI offers 3 free product photos with no account required. Pro plans at $9.90/month give you unlimited generations, higher resolution outputs, and batch processing — ideal for e-commerce stores with large catalogs on Amazon, Shopify, or Etsy.",
+        "text": "Yes! PhotoForge AI offers 3 free product photos with no account required. Pro plans at $11.99/month give you unlimited generations, higher resolution outputs, and batch processing — ideal for e-commerce stores with large catalogs on Amazon, Shopify, or Etsy.",
       },
     },
     {
@@ -238,6 +238,21 @@ export async function generateMetadata({
  * (e.g. interactive UI that uses useTranslations hook). We pass all messages
  * for simplicity; for very large sites you'd pass only the needed namespace.
  */
+
+/**
+ * Viewport configuration — mobile-first responsive settings + theme color.
+ * Theme color tints the browser chrome on mobile (address bar, status bar).
+ */
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: [
+    { media: "(prefers-color-scheme: dark)", color: "#09090b" },
+    { media: "(prefers-color-scheme: light)", color: "#7c3aed" },
+  ],
+};
+
 export default async function LocaleLayout({
   children,
   params,
