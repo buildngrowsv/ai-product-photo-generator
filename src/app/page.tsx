@@ -8,7 +8,7 @@
  * BUSINESS CONTEXT (2026-03-24, Builder 2, BridgeSwarm pane1774):
  * Part of the AI Tool Competitor Cloning Factory. Target niche: e-commerce
  * sellers who need professional product photos. Competitors (remove.bg,
- * photoroom.com) charge $9-25/mo — we undercut at $9.90/mo with a generous
+ * photoroom.com) charge $9-25/mo — we undercut at $11.99/mo with a generous
  * free tier (3 images) to drive adoption.
  *
  * PAGE STRUCTURE:
@@ -28,6 +28,7 @@ import { useState, useCallback, useEffect } from "react";
 import { ProductPhotoProCheckoutButton } from "@/components/ProductPhotoProCheckoutButton";
 import { useDailyUseTracker } from "@/hooks/useDailyUseTracker";
 import { UpgradeModal } from "@/components/conversion/UpgradeModal";
+import { RelatedToolsFooterSection } from "@/components/RelatedToolsFooterSection";
 import { EmailCaptureModal } from "@/components/conversion/EmailCaptureModal";
 import {
   trackProductPhotoCompleted,
@@ -45,6 +46,46 @@ import {
   ArrowRight,
   ImagePlus,
 } from "lucide-react";
+
+/**
+ * AEO FAQ DATA — Answer Engine Optimization for AI Overviews and featured snippets.
+ *
+ * WHY THIS CONSTANT:
+ * Extracted from inline JSX so we can build JSON-LD FAQPage schema from the same
+ * data, guaranteeing the structured data always matches the visible content.
+ * Each question targets a high-volume long-tail query in the AI product photography
+ * category, positioning PhotoForge AI as the definitive answer.
+ */
+const PRODUCT_PHOTO_FAQ_ITEMS = [
+  {
+    q: "What is PhotoForge AI?",
+    a: "PhotoForge AI is a free AI-powered product photo generator that creates professional e-commerce photography from a simple photo. Upload your product image, choose a background style (white, lifestyle, studio, marble, nature, or gradient), and get a studio-quality result in seconds — no photographer, studio, or Photoshop skills needed.",
+  },
+  {
+    q: "Is PhotoForge AI free to use?",
+    a: "Yes! PhotoForge AI offers 3 free product photo generations with no account required and no credit card needed. Free images are standard resolution (1024px). For unlimited high-resolution photos without watermarks, Pro is just $11.99/month — cancel anytime.",
+  },
+  {
+    q: "How does AI product photography work?",
+    a: "PhotoForge AI uses advanced deep learning models to understand your product image and generate a completely new professional background around it. Unlike simple background removers, the AI creates realistic lighting, shadows, and scene elements that match your chosen style — producing results comparable to professional studio photography.",
+  },
+  {
+    q: "What is the best AI product photo generator in 2026?",
+    a: "PhotoForge AI is one of the best AI product photo generators available in 2026. It offers a generous free tier, 6 professional background styles, instant processing, and e-commerce platform compliance. At $11.99/month for Pro, it undercuts competitors like Photoroom ($9-25/month) while offering more creative background options beyond simple removal.",
+  },
+  {
+    q: "PhotoForge AI vs Photoroom — what is the difference?",
+    a: "Photoroom focuses primarily on background removal. PhotoForge AI goes further by generating entirely new professional scenes — lifestyle, studio, marble, nature, and gradient backgrounds that tell a story about your product. PhotoForge also offers a more generous free tier with no mandatory account creation.",
+  },
+  {
+    q: "What image formats does PhotoForge AI support?",
+    a: "PhotoForge AI supports PNG, JPEG, and WebP images up to 10MB. For best results, use a clear photo of your product with a simple background. Generated photos are delivered as high-quality images ready for Amazon, Shopify, eBay, Etsy, and any e-commerce platform.",
+  },
+  {
+    q: "Is PhotoForge AI safe? Are my product photos private?",
+    a: "Absolutely. Your uploaded product photos are processed securely and not retained after generation is complete. We never use your images for AI training or share them with competitors. All transfers are encrypted with HTTPS/TLS, and no personal data is required for the free tier.",
+  },
+];
 
 /**
  * Background style presets — these will be passed to the AI model as scene
@@ -254,7 +295,7 @@ export default function PhotoForgeAILandingPage() {
       setHasReachedDailyLimit(true);
       setTodayUsageCount(currentCount);
       setGenerationErrorMessage(
-        `You've used all ${DAILY_FREE_GENERATION_LIMIT} free generations today. Upgrade to Pro for unlimited product photos at $9.90/mo.`
+        `You've used all ${DAILY_FREE_GENERATION_LIMIT} free generations today. Upgrade to Pro for unlimited product photos at $11.99/mo.`
       );
       return;
     }
@@ -621,7 +662,7 @@ export default function PhotoForgeAILandingPage() {
                 Pro
               </h3>
               <div className="text-4xl font-bold mb-6">
-                $9.90<span className="text-lg text-gray-500 font-normal">/month</span>
+                $11.99<span className="text-lg text-gray-500 font-normal">/month</span>
               </div>
               <ul className="space-y-3 mb-8">
                 {[
@@ -667,28 +708,7 @@ export default function PhotoForgeAILandingPage() {
             Frequently Asked <span className="gradient-text">Questions</span>
           </h2>
           <div className="space-y-6">
-            {[
-              {
-                q: "What is an AI product photo generator?",
-                a: "An AI product photo generator uses artificial intelligence to create professional-looking product photography from a simple photo. You upload your product image, choose a background style, and the AI generates a studio-quality result in seconds — no photographer or Photoshop skills needed.",
-              },
-              {
-                q: "What image formats are supported?",
-                a: "PhotoForge AI supports PNG, JPEG, and WebP images up to 10MB. For best results, use a clear photo of your product with a simple background.",
-              },
-              {
-                q: "How does the free tier work?",
-                a: "You get 3 free product photo generations with no account required. Free images are standard resolution (1024px) with a small watermark. Upgrade to Pro for unlimited photos, high resolution, and no watermark.",
-              },
-              {
-                q: "Can I use these photos on Amazon, Shopify, and eBay?",
-                a: "Yes! Our AI-generated product photos meet the requirements for all major e-commerce platforms. The 'Clean White' style specifically generates Amazon-compliant white background photos.",
-              },
-              {
-                q: "How is this different from remove.bg or Photoroom?",
-                a: "Unlike background removers, PhotoForge AI doesn't just remove backgrounds — it generates entirely new professional scenes. Choose from lifestyle, studio, marble, nature, and more styles that tell a story about your product.",
-              },
-            ].map(({ q, a }) => (
+            {PRODUCT_PHOTO_FAQ_ITEMS.map(({ q, a }) => (
               <details
                 key={q}
                 className="group p-6 rounded-xl bg-white/[0.02] border border-white/5"
@@ -725,6 +745,26 @@ export default function PhotoForgeAILandingPage() {
         </div>
       </section>
 
+      {/* JSON-LD FAQPage structured data — enables rich results in Google Search
+       * and provides structured answers for AI Overview / SGE citation. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: PRODUCT_PHOTO_FAQ_ITEMS.map((item) => ({
+              "@type": "Question",
+              name: item.q,
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: item.a,
+              },
+            })),
+          }),
+        }}
+      />
+
       {/* ===================== FOOTER ===================== */}
       <footer className="py-12 px-4 border-t border-white/5">
         <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
@@ -757,6 +797,7 @@ export default function PhotoForgeAILandingPage() {
             </p>
           </div>
         </div>
+        <RelatedToolsFooterSection currentSiteUrl="https://aiproductphotomaker.com" />
       </footer>
     </div>
   );
