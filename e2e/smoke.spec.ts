@@ -8,7 +8,7 @@
  *
  * SCOPE:
  *   - Homepage renders product branding (PhotoForge AI)
- *   - Pricing section renders with dollar amounts ($9.90 Pro tier)
+ *   - Pricing section renders with dollar amounts ($11.99 Pro tier)
  *   - Pro/paid CTA button is present
  *   - Free tier mentioned on homepage
  *   - ES locale routes work (/es, /es/pricing)
@@ -66,7 +66,7 @@ test.describe("EN homepage", () => {
   test("pricing section is visible on homepage", async ({ page }) => {
     /**
      * PhotoForge AI (aiproductphotomaker.com) embeds pricing directly on the
-     * homepage as a section with $0 (Free) and $9.90 (Pro) tiers. The pricing
+     * homepage as a section with $0 (Free) and $11.99 (Pro) tiers. The pricing
      * section uses an id="pricing" anchor. This test verifies the pricing
      * content renders on the page without needing a separate /pricing route.
      */
@@ -124,12 +124,10 @@ test.describe("Pricing page", () => {
 
   test("Pro tier price is visible", async ({ page }) => {
     /**
-     * The Pro tier is $9.90/mo on the homepage and $11.99/mo on the dedicated
-     * pricing page (different Stripe product). Accept either price as valid
-     * since the exact amount may change — the key invariant is that a dollar
-     * amount in the right range is present.
+     * The Pro tier is $11.99/mo (canonical Stripe price). The test verifies
+     * that this dollar amount is visible on the pricing page.
      */
-    await expect(page.getByText(/\$(?:9\.90|11\.99)/i).first()).toBeVisible();
+    await expect(page.getByText(/\$11\.99/i).first()).toBeVisible();
   });
 
   test("upgrade / Get Pro CTA is present", async ({ page }) => {

@@ -48,7 +48,7 @@ const COMPARISONS = [
     highlights: [
       "3 free product photos",
       "No app download required",
-      "$9.90/mo vs $12.99/mo",
+      "$11.99/mo vs $12.99/mo",
     ],
   },
   {
@@ -66,7 +66,7 @@ const COMPARISONS = [
     name: "Flair AI",
     tagline: "Unlimited product photos vs $25-$190/month with image caps",
     highlights: [
-      "$9.90/mo unlimited vs $25/mo (250 images)",
+      "$11.99/mo unlimited vs $25/mo (250 images)",
       "No per-image caps or tier upgrades",
       "Simple upload-and-generate workflow",
     ],

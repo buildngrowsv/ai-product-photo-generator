@@ -32,7 +32,7 @@ import { BreadcrumbJsonLd } from "@/components/BreadcrumbJsonLd";
 export const metadata: Metadata = {
   title: "PhotoForge AI vs Pebblely — AI Product Photo Generator Comparison (2026)",
   description:
-    "Compare PhotoForge AI with Pebblely for AI product photography. Free to start, unlimited Pro at $9.90/mo vs Pebblely's $19/mo. See features, pricing, and quality.",
+    "Compare PhotoForge AI with Pebblely for AI product photography. Free to start, unlimited Pro at $11.99/mo vs Pebblely's $19/mo. See features, pricing, and quality.",
   keywords: [
     "pebblely alternative",
     "pebblely alternative free",
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "PhotoForge AI vs Pebblely — AI Product Photo Generator Comparison",
     description:
-      "Free to start, $9.90/mo unlimited vs $19/mo. Compare PhotoForge AI with Pebblely for AI-powered product photography.",
+      "Free to start, $11.99/mo unlimited vs $19/mo. Compare PhotoForge AI with Pebblely for AI-powered product photography.",
     url: "https://aiproductphotomaker.com/vs/pebblely",
     type: "website",
     images: [{ url: "/opengraph-image", width: 1200, height: 630 }],
@@ -301,7 +301,7 @@ export default function VsPebblelyPage() {
           <div className="rounded-2xl border border-gray-800 bg-gradient-to-br from-gray-900 to-gray-950 p-12">
             <h2 className="text-3xl font-bold">Ready to Transform Your Product Photos?</h2>
             <p className="mt-3 text-gray-400">
-              No caps. No watermarks. $9.90/mo unlimited. Upload a product and get professional backgrounds in seconds.
+              No caps. No watermarks. $11.99/mo unlimited. Upload a product and get professional backgrounds in seconds.
             </p>
             <Link
               href="/"

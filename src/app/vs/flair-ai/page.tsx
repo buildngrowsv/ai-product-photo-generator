@@ -123,7 +123,7 @@ const COMPARISON_ROWS = [
   { feature: "Free Tier", ours: "3 free product photos, no watermark", theirs: "10 images total (trial only)" },
   { feature: "Basic Price", ours: "$11.99/month unlimited", theirs: "$25/month (250 images)" },
   { feature: "Pro Price", ours: "Included in $11.99/month", theirs: "$75/month (1000 images)" },
-  { feature: "Enterprise", ours: "Not needed — unlimited at $9.90", theirs: "$190/month (5000 images)" },
+  { feature: "Enterprise", ours: "Not needed — unlimited at $11.99", theirs: "$190/month (5000 images)" },
   { feature: "Image Caps", ours: "None (unlimited with Pro)", theirs: "Strict per-tier limits" },
   { feature: "Platform", ours: "Browser-based", theirs: "Browser-based" },
   { feature: "Scene Composition", ours: "AI-generated backgrounds", theirs: "Drag-and-drop product placement" },
