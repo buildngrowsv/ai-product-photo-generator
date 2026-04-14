@@ -43,26 +43,6 @@ const nextConfig: NextConfig = {
     ],
   },
   /**
-   * Turbopack resolveAlias for next-intl/config.
-   *
-   * next-intl uses a virtual module "next-intl/config" as the bridge between
-   * the plugin (which knows the request.ts path at config time) and the
-   * server runtime (which needs to call getRequestConfig). Without this alias,
-   * the server chunk imports an empty stub and throws "Couldn't find config".
-   *
-   * In Next.js ≤15: set via experimental.turbo.resolveAlias (done by plugin)
-   * In Next.js 16+: must be set at top-level turbopack.resolveAlias
-   */
-  turbopack: {
-    resolveAlias: {
-      // Relative path required — Turbopack in Next.js 16 does not support
-      // absolute paths in resolveAlias yet ("server relative imports not
-      // implemented"). The path is relative to the project root (cwd).
-      "next-intl/config": "./src/i18n/request.ts",
-    },
-  },
-
-  /**
    * Baseline security headers applied to every route (T16, fleet sync 2026-04-08).
    * Conservative defaults: no CSP here because Stripe.js, fal.media, and Next.js
    * inline bootstraps vary per clone — each clone owner can add a CSP (or
