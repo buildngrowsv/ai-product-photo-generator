@@ -25,6 +25,7 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
+import Link from "next/link";
 import { ProductPhotoProCheckoutButton } from "@/components/ProductPhotoProCheckoutButton";
 import { useDailyUseTracker } from "@/hooks/useDailyUseTracker";
 import { UpgradeModal } from "@/components/conversion/UpgradeModal";
@@ -364,12 +365,12 @@ export default function PhotoForgeAILandingPage() {
             <span className="text-xl font-bold gradient-text">PhotoForge AI</span>
           </div>
           <div className="flex items-center gap-4">
-            <a
+            <Link
               href="/guide/ai-product-photography"
               className="text-sm text-gray-400 hover:text-white transition-colors"
             >
               Guide
-            </a>
+            </Link>
             <a href="#pricing" className="text-sm text-gray-400 hover:text-white transition-colors">
               Pricing
             </a>
@@ -735,13 +736,13 @@ export default function PhotoForgeAILandingPage() {
               See the full workflow, before-and-after examples, and the cost comparison versus a
               traditional photographer.
             </p>
-            <a
+            <Link
               href="/guide/ai-product-photography"
               className="mt-6 inline-flex items-center gap-2 rounded-xl border border-white/10 px-5 py-3 font-medium text-white transition-colors hover:border-white/20 hover:bg-white/[0.04]"
             >
               Read the guide
               <ArrowRight className="h-4 w-4" />
-            </a>
+            </Link>
           </div>
         </div>
       </section>
@@ -775,21 +776,21 @@ export default function PhotoForgeAILandingPage() {
           </div>
           <div className="flex flex-col items-center gap-3 md:items-end">
             <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-gray-400 md:justify-end">
-              <a href="/guide/ai-product-photography" className="hover:text-white transition-colors">
+              <Link href="/guide/ai-product-photography" className="hover:text-white transition-colors">
                 Guide
-              </a>
-              <a href="/pricing" className="hover:text-white transition-colors">
+              </Link>
+              <Link href="/pricing" className="hover:text-white transition-colors">
                 Pricing
-              </a>
-              <a href="/privacy" className="hover:text-white transition-colors">
+              </Link>
+              <Link href="/privacy" className="hover:text-white transition-colors">
                 Privacy
-              </a>
-              <a href="/terms" className="hover:text-white transition-colors">
+              </Link>
+              <Link href="/terms" className="hover:text-white transition-colors">
                 Terms
-              </a>
-              <a href="/refunds" className="hover:text-white transition-colors">
+              </Link>
+              <Link href="/refunds" className="hover:text-white transition-colors">
                 Refunds
-              </a>
+              </Link>
             </div>
             <p className="text-center text-sm text-gray-500 md:text-right">
               &copy; {new Date().getFullYear()} PhotoForge AI. Professional product photography powered by AI.

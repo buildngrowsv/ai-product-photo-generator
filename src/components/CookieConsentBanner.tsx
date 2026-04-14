@@ -70,7 +70,9 @@ export function CookieConsentBanner() {
     }
     const stored = syncFromStorage();
     if (stored === null) {
-      setVisible(true);
+      // Defer state update to avoid synchronous setState in effect body
+      // (react-hooks/set-state-in-effect). The microtask still runs before paint.
+      queueMicrotask(() => setVisible(true));
     }
   }, [hasGa, syncFromStorage]);
 

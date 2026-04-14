@@ -8,6 +8,8 @@
  * Required for directory submissions (Futurepedia, There's An AI For That, etc.)
  */
 
+import Link from "next/link";
+
 const SITE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://aiproductphotomaker.com";
 
 export const metadata = {
@@ -32,12 +34,12 @@ export default function RefundPolicyPage() {
     <main className="min-h-screen bg-[#0b1120] px-4 py-16 text-white">
       <div className="mx-auto max-w-3xl space-y-8">
         <div className="space-y-3">
-          <a
+          <Link
             href="/"
             className="text-sm text-amber-300 hover:text-amber-200 transition-colors"
           >
             ← Back to AI Product Photo Generator
-          </a>
+          </Link>
           <h1 className="text-4xl font-bold">Refund Policy</h1>
           <p className="text-sm text-slate-400">Last updated: 2026-04-08</p>
         </div>

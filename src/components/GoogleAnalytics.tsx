@@ -42,7 +42,7 @@ function sendPageView(trackingId: string, pathname: string) {
 
 declare global {
   interface Window {
-    dataLayer?: Object[];
+    dataLayer?: object[];
     gtag?: (...args: unknown[]) => void;
   }
 }

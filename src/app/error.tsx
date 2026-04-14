@@ -9,6 +9,7 @@
  */
 
 import { useEffect } from "react";
+import Link from "next/link";
 
 export default function GlobalErrorPage({
   error,
@@ -37,13 +38,13 @@ export default function GlobalErrorPage({
         >
           Try Again
         </button>
-        <a
+        <Link
           href="/"
           className="rounded-lg border px-6 py-3 text-sm font-medium transition-colors"
           style={{ borderColor: "#27272a", color: "#fafafa" }}
         >
           Back to Home
-        </a>
+        </Link>
       </div>
     </div>
   );

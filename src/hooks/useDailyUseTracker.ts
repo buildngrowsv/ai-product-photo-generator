@@ -125,11 +125,16 @@ export function useDailyUseTracker(): UseDailyUseTrackerReturn {
   const [showEmailGate, setShowEmailGate] = useState(false);
   const [emailCaptured, setEmailCaptured] = useState(false);
 
-  // Hydrate from localStorage on mount (client-only execution)
+  // Hydrate from localStorage on mount (client-only execution).
+  // Uses queueMicrotask to avoid synchronous setState inside effect body
+  // (react-hooks/set-state-in-effect). The microtask still resolves before paint.
   useEffect(() => {
     const record = readDailyUseRecord();
-    setTodayCount(record.count);
-    setEmailCaptured(readEmailCaptured());
+    const captured = readEmailCaptured();
+    queueMicrotask(() => {
+      setTodayCount(record.count);
+      setEmailCaptured(captured);
+    });
   }, []);
 
   // remainingFree shows how many gens the user believes they have left.
