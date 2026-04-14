@@ -13,6 +13,7 @@
 "use client";
 
 import { useState } from "react";
+import { PRODUCT_CONFIG } from "@/lib/config";
 
 const PRO_FEATURES = [
   "Unlimited AI product photo transformations",
@@ -150,7 +151,7 @@ export default function PricingClient({
             <div className="mb-6">
               <h2 className="text-xl font-semibold text-blue-300">Pro</h2>
               <div className="mt-3 flex items-baseline gap-1">
-                <span className="text-4xl font-bold">$11.99</span>
+                <span className="text-4xl font-bold">${PRODUCT_CONFIG.pricing.pro.price}</span>
                 <span className="text-white/50">/month</span>
               </div>
               <p className="mt-2 text-sm text-white/50">Cancel anytime</p>
