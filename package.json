@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "node scripts/validate-env-configuration.mjs && next build",
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
@@ -12,7 +12,8 @@
     "test:e2e": "npx playwright test",
     "test:e2e:live": "E2E_BASE_URL=https://aiproductphotomaker.com npx playwright test",
     "test:e2e:live:ui": "E2E_BASE_URL=https://aiproductphotomaker.com npx playwright test --ui",
-    "verify": "npm run build && npm test && echo '✅ Build + tests pass — safe to push'"
+    "verify": "npm run build && npm test && echo '✅ Build + tests pass — safe to push'",
+    "env:validate": "node scripts/validate-env-configuration.mjs"
   },
   "dependencies": {
     "@fal-ai/client": "^1.5.0",
