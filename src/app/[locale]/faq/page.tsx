@@ -87,7 +87,7 @@ const faqs = [
   {
     question: "What does pricing look like?",
     answer:
-      "We offer a free tier so you can try the tool with a limited number of generations per day. Our Pro plan unlocks unlimited generations, higher resolution outputs, batch processing, premium backgrounds, and priority processing speed. Visit our pricing page for current rates — plans start at just $9.99/month, which is a fraction of what a single professional product photoshoot would cost.",
+      "We offer a free tier so you can try the tool with a limited number of generations per day. Our Pro plan unlocks unlimited generations, higher resolution outputs, batch processing, premium backgrounds, and priority processing speed. Visit our pricing page for current rates — plans start at just $11.99/month, which is a fraction of what a single professional product photoshoot would cost.",
   },
 ];
 
