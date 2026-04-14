@@ -15,14 +15,18 @@
  * Without this, Next.js may statically optimize this route at build time,
  * which prevents reading the raw request body needed for HMAC verification.
  *
- * CURRENTLY HANDLED EVENT:
- * - checkout.session.completed: Logs the subscription activation. Extend
- *   with DB writes when user accounts land in this repo.
+ * HANDLED EVENTS:
+ * - checkout.session.completed: Activates subscription token in Redis
+ * - customer.subscription.updated: Logs status changes (renewal, plan change)
+ * - customer.subscription.deleted: Logs cancellation for audit trail
+ * - invoice.payment_failed: Logs failed payment for monitoring
+ * - invoice.paid: Logs successful renewal
  *
  * TO REGISTER THIS WEBHOOK IN STRIPE DASHBOARD:
  * Dashboard → Developers → Webhooks → Add endpoint
  * URL: https://<your-vercel-domain>/api/stripe/webhook
- * Events: checkout.session.completed
+ * Events: checkout.session.completed, customer.subscription.updated,
+ *         customer.subscription.deleted, invoice.payment_failed, invoice.paid
  * After saving, copy the signing secret → set as STRIPE_WEBHOOK_SECRET on Vercel.
  *
  * Builder 9 (2026-03-25, T-productphoto-stripe).
@@ -132,6 +136,49 @@ export async function POST(request: NextRequest) {
       }
       break;
     }
+
+    case "customer.subscription.updated": {
+      // Subscription status changed (renewal, plan change, past_due, etc.).
+      // Token stays active as long as subscription is active — Stripe manages
+      // renewal billing automatically.
+      const subscription = event.data.object;
+      console.log("[webhook] customer.subscription.updated", {
+        id: subscription["id"],
+        status: subscription["status"],
+      });
+      break;
+    }
+
+    case "customer.subscription.deleted": {
+      // Subscription cancelled or expired. The token will expire naturally
+      // at its 13-month TTL. For immediate revocation, store a
+      // subscriptionId → token mapping at checkout creation time.
+      const subscription = event.data.object;
+      console.log("[webhook] customer.subscription.deleted", {
+        id: subscription["id"],
+        customer: subscription["customer"],
+      });
+      break;
+    }
+
+    case "invoice.payment_failed": {
+      // Payment retry pending — Stripe will send subscription.deleted if all
+      // retries exhaust. Log only; do not revoke Pro access until subscription
+      // is actually deleted.
+      console.warn("[webhook] invoice.payment_failed", {
+        invoiceId: event.data.object["id"],
+      });
+      break;
+    }
+
+    case "invoice.paid": {
+      // Renewal confirmed — token TTL is already 13 months, no action needed.
+      console.log("[webhook] invoice.paid", {
+        invoiceId: event.data.object["id"],
+      });
+      break;
+    }
+
     default:
       break;
   }

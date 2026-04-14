@@ -20,8 +20,8 @@
  * across all clone repos for copy-paste reliability.)
  *
  * Stripe product: AI Product Photo Pro — $11.99/month recurring subscription
- * Live price ID: price_1TEUbhGsPhSTDD4x6Rcg9hKo
- * Created 2026-03-24 by Builder 8 + Stripe API agent.
+ * Price ID: read from STRIPE_PRICE_ID_PRO env var (no longer hardcoded).
+ * Originally created 2026-03-24 by Builder 8 + Stripe API agent.
  * Checkout route wired by Builder 9 (2026-03-25, T-productphoto-stripe).
  */
 
@@ -33,11 +33,16 @@ import { createPendingToken } from "@/lib/subscription-store";
  * live Stripe price ID. Currently only "pro" exists; adding "business" later
  * just means adding another entry here.
  */
-const PLAN_TO_STRIPE_PRICE_ID: Record<string, string> = {
-  // AI Product Photo Pro — $11.99/month recurring subscription
-  // Created 2026-03-24 by Builder 8 + Stripe API agent.
-  pro: "price_1TEUbhGsPhSTDD4x6Rcg9hKo",
-};
+/**
+ * PLAN_TO_STRIPE_PRICE_ID — resolved at request time from env vars.
+ * Using env vars instead of hardcoded IDs so the same code works across
+ * test/live modes and can be rotated without a redeploy.
+ */
+function getPlanToPriceId(): Record<string, string> {
+  const proPriceId = process.env.STRIPE_PRICE_ID_PRO;
+  if (!proPriceId) return {};
+  return { pro: proPriceId };
+}
 
 export async function POST(request: NextRequest) {
   const falKey = process.env.FAL_KEY;
@@ -71,7 +76,7 @@ export async function POST(request: NextRequest) {
     // If body parsing fails, fall back to "pro" — the button only sends one plan.
   }
 
-  const priceId = PLAN_TO_STRIPE_PRICE_ID[plan];
+  const priceId = getPlanToPriceId()[plan];
   if (!priceId) {
     return NextResponse.json({ error: `Unknown plan: ${plan}` }, { status: 400 });
   }
