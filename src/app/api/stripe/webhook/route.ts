@@ -139,7 +139,7 @@ export async function POST(request: NextRequest) {
         }
         console.log("[webhook] checkout.session.completed: token activated", {
           sessionId: session["id"],
-          token: subscriptionToken,
+          token: subscriptionToken.slice(0, 8) + "…",
         });
       } else {
         console.warn(
