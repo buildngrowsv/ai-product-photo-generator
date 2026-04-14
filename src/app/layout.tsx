@@ -1,30 +1,46 @@
 /**
- * layout.tsx — Root pass-through layout for next-intl App Router integration
+ * =============================================================================
+ * PhotoForge AI — Root Layout
+ * =============================================================================
  *
- * PURPOSE: With next-intl's [locale] segment pattern, the actual HTML shell
- * lives in src/app/[locale]/layout.tsx. This root layout must exist (Next.js
- * requires it) but should be a minimal pass-through — it renders children
- * directly so the [locale] layout can own the <html> and <body> tags.
+ * PURPOSE:
+ * Provides the HTML shell (<html>, <body>) for ALL pages, including both
+ * locale-routed pages (under [locale]/) and non-locale pSEO pages
+ * (/for/, /vs/, /use-cases/, /best/).
  *
- * WHY PASS-THROUGH:
- * If we kept the full HTML/body here AND in [locale]/layout.tsx, Next.js
- * would render nested <html> elements, which is invalid HTML and causes
- * hydration mismatches. The pass-through avoids that by delegating all
- * HTML structure to the locale-aware child layout.
+ * WHY THIS STRUCTURE:
+ * When next-intl was added (pane1774 T13, 2026-03-24), the <html>/<body>
+ * tags were moved into [locale]/layout.tsx, leaving this root layout as a
+ * bare fragment. That broke all pSEO pages outside [locale] because they
+ * had no HTML shell — causing 404s on /for/*, /vs/*, etc.
  *
- * Original SEO metadata, Inter font, dark theme, and JSON-LD are all
- * preserved in src/app/[locale]/layout.tsx.
- *
- * Migrated 2026-03-24 as part of i18n rollout (pane1774 T13).
+ * FIX (2026-04-14, Custom 2 / prism-exec-6847):
+ * Root layout now owns <html> and <body>. The [locale] layout is a nested
+ * wrapper that adds locale providers and JSON-LD without duplicating the
+ * document structure. pSEO pages inherit this root layout and render
+ * correctly. Same pattern as mangaartai fix (Builder 3, commit 3b5583a).
+ * =============================================================================
  */
 import type { ReactNode } from "react";
-import { default as GoogleAnalyticsLoader } from "@/components/GoogleAnalytics";
+import type { Viewport } from "next";
+import "./globals.css";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: [
+    { media: "(prefers-color-scheme: dark)", color: "#09090b" },
+    { media: "(prefers-color-scheme: light)", color: "#7c3aed" },
+  ],
+};
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <>
-      <GoogleAnalyticsLoader />
-      {children}
-    </>
+    <html lang="en" className="dark">
+      <body className="font-sans antialiased bg-gray-950 text-white min-h-screen">
+        {children}
+      </body>
+    </html>
   );
 }

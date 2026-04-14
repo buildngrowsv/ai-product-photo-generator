@@ -29,14 +29,14 @@
  * Updated 2026-03-24 by Scout 15 / i18n rollout agent.
  */
 
-import type { Metadata, Viewport } from "next";
+import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import CookieConsent from "@/components/CookieConsent";
 import { CookieConsentBanner } from "@/components/CookieConsentBanner";
-import "../globals.css";
+/* globals.css is now imported in the root layout (src/app/layout.tsx) */
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import GoogleAnalyticsLoader from "@/components/GoogleAnalytics";
@@ -239,19 +239,7 @@ export async function generateMetadata({
  * for simplicity; for very large sites you'd pass only the needed namespace.
  */
 
-/**
- * Viewport configuration — mobile-first responsive settings + theme color.
- * Theme color tints the browser chrome on mobile (address bar, status bar).
- */
-export const viewport: Viewport = {
-  width: "device-width",
-  initialScale: 1,
-  maximumScale: 5,
-  themeColor: [
-    { media: "(prefers-color-scheme: dark)", color: "#09090b" },
-    { media: "(prefers-color-scheme: light)", color: "#7c3aed" },
-  ],
-};
+/* Viewport is now exported from root layout (src/app/layout.tsx) */
 
 export default async function LocaleLayout({
   children,
@@ -270,39 +258,30 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} className="dark">
-      <head>
-        {/* SoftwareApplication rich snippet for Google */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(jsonLdStructuredData),
-          }}
-        />
-        {/* FAQPage rich snippet for Google SERP expandable Q&A */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdFaqData) }}
-        />
-      </head>
-      <body className="font-sans antialiased bg-gray-950 text-white min-h-screen">
-        {/* GA4 with consent mode — GoogleAnalyticsLoader reads env var internally */}
-        <GoogleAnalyticsLoader />
-        <LanguageSwitcher locale={locale} />
-        {/*
-         * NextIntlClientProvider wraps the entire app so that client
-         * components can call useTranslations() without an extra provider
-         * higher in the tree. messages are serialized from server to client.
-         */}
-                <header className="fixed top-2 right-4 z-50 flex items-center">
-          <LocaleSwitcher />
-        </header>
-        <NextIntlClientProvider messages={messages}>
-          {children}
-        </NextIntlClientProvider>
-        <CookieConsentBanner />
-        <CookieConsent />
-      </body>
-    </html>
+    <>
+      {/* SoftwareApplication rich snippet for Google */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLdStructuredData),
+        }}
+      />
+      {/* FAQPage rich snippet for Google SERP expandable Q&A */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdFaqData) }}
+      />
+      {/* GA4 with consent mode — GoogleAnalyticsLoader reads env var internally */}
+      <GoogleAnalyticsLoader />
+      <LanguageSwitcher locale={locale} />
+      <header className="fixed top-2 right-4 z-50 flex items-center">
+        <LocaleSwitcher />
+      </header>
+      <NextIntlClientProvider messages={messages}>
+        {children}
+      </NextIntlClientProvider>
+      <CookieConsentBanner />
+      <CookieConsent />
+    </>
   );
 }
