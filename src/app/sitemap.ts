@@ -8,20 +8,30 @@
  * "ai product photo generator free" has strong e-commerce intent — sellers
  * on Etsy, Amazon, and Shopify need professional product photos fast.
  *
+ * DYNAMIC SEO PAGES:
+ * Imports SEO_PAGES_CONFIG to automatically generate sitemap entries for
+ * /for/[audience] and /best/[slug] programmatic pages. Adding a new audience
+ * or best page to seo-pages.ts automatically adds it to the sitemap.
+ *
  * BASE URL: Vercel deployment URL. Update when custom domain is configured.
  *
  * ADDED: 2026-03-24 as part of SEO rollout across all clone apps.
+ * UPDATED: 2026-04-13 to include /for/ and /best/ programmatic SEO routes.
  * =============================================================================
  */
 
 import type { MetadataRoute } from "next";
+import { SEO_PAGES_CONFIG } from "@/config/seo-pages";
 
 const BASE_URL = (
   process.env.NEXT_PUBLIC_APP_URL?.trim() || "https://aiproductphotomaker.com"
 ).replace(/\/$/, "");
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  return [
+  /**
+   * Static pages — manually maintained list of core site pages.
+   */
+  const staticPages: MetadataRoute.Sitemap = [
     {
       url: BASE_URL,
       lastModified: new Date(),
@@ -100,5 +110,41 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 0.8,
     },
+    {
+      url: `${BASE_URL}/vs/flair-ai`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
   ];
+
+  /**
+   * Audience landing pages — /for/[audience] routes generated from
+   * SEO_PAGES_CONFIG. Each targets a specific buyer persona searching
+   * for "best AI product photo generator for [audience]".
+   */
+  const audiencePages: MetadataRoute.Sitemap = SEO_PAGES_CONFIG.audiences.map(
+    (audienceEntry) => ({
+      url: `${BASE_URL}/for/${audienceEntry.slug}`,
+      lastModified: new Date(),
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
+    })
+  );
+
+  /**
+   * Best-of listicle pages — /best/[slug] routes generated from
+   * SEO_PAGES_CONFIG. Each targets high-intent "best [category]" keywords
+   * that capture comparison shoppers ready to buy.
+   */
+  const bestPages: MetadataRoute.Sitemap = SEO_PAGES_CONFIG.bestPages.map(
+    (bestEntry) => ({
+      url: `${BASE_URL}/best/${bestEntry.slug}`,
+      lastModified: new Date(),
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
+    })
+  );
+
+  return [...staticPages, ...audiencePages, ...bestPages];
 }
