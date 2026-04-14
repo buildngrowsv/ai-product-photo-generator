@@ -27,7 +27,7 @@
  * All products must convert from BYOK to hosted backend proxy. This route
  * uses OUR fal.ai key (FAL_KEY env var on Vercel) so users don't need their own.
  * Usage is metered via a simple counter for now — Stripe billing integration
- * will gate heavy usage behind Pro subscription ($12.90/mo).
+ * will gate heavy usage behind Pro subscription ($11.99/mo).
  *
  * ENV VARS REQUIRED:
  * - FAL_KEY: fal.ai API key (set in Vercel dashboard, NOT in code)

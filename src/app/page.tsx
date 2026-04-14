@@ -35,8 +35,8 @@ import {
   trackProductPhotoDownloaded,
   trackProductPhotoRequested,
 } from "@/lib/analytics/ga4-web-events";
-import {
 import { SeoInternalLinks } from "@/components/SeoInternalLinks";
+import {
   Upload,
   Sparkles,
   Download,

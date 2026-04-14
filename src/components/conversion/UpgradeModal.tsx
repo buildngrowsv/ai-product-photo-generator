@@ -121,7 +121,7 @@ export function UpgradeModal({ open, remainingFree, onDismiss }: UpgradeModalPro
                   <p className="text-xs text-gray-400">Unlimited photos + HD resolution</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-2xl font-bold text-white">$9.90</p>
+                  <p className="text-2xl font-bold text-white">$11.99</p>
                   <p className="text-xs text-gray-500">/month</p>
                 </div>
               </div>
@@ -130,7 +130,7 @@ export function UpgradeModal({ open, remainingFree, onDismiss }: UpgradeModalPro
                 onClick={onDismiss}
                 className="block w-full text-center py-2.5 rounded-lg font-semibold text-sm text-white bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 transition-all"
               >
-                Upgrade to Pro — $9.90/mo
+                Upgrade to Pro — $11.99/mo
               </a>
             </div>
 
