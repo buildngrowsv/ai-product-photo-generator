@@ -146,5 +146,24 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })
   );
 
-  return [...staticPages, ...audiencePages, ...bestPages];
+  /* ── pSEO hub pages (parent indices for content clusters) ── */
+  const hubPages: MetadataRoute.Sitemap = [
+    { url: `${BASE_URL}/vs`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
+    { url: `${BASE_URL}/for`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
+    { url: `${BASE_URL}/use-cases`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
+  ];
+
+  /**
+   * Use case pages — /use-cases/[use-case] routes from SEO_PAGES_CONFIG.
+   */
+  const useCasePages: MetadataRoute.Sitemap = SEO_PAGES_CONFIG.useCases.map(
+    (useCaseEntry) => ({
+      url: `${BASE_URL}/use-cases/${useCaseEntry.slug}`,
+      lastModified: new Date(),
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    })
+  );
+
+  return [...staticPages, ...hubPages, ...audiencePages, ...bestPages, ...useCasePages];
 }
