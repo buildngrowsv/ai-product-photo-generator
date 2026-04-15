@@ -102,14 +102,6 @@ const softwareAppJsonLd = {
     priceCurrency: "USD",
     offerCount: 2,
   },
-  // AggregateRating — drives star-rating rich snippets in Google SERPs (15-25% CTR lift)
-  aggregateRating: {
-    "@type": "AggregateRating",
-    ratingValue: "4.8",
-    ratingCount: "64",
-    bestRating: "5",
-    worstRating: "1",
-  },
   featureList: [
     "AI-powered product photo generation",
     "White studio and lifestyle scene backgrounds",
