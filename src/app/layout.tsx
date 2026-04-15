@@ -161,6 +161,24 @@ const jsonLdWebSite = {
   },
 };
 
+/**
+ * HowTo JSON-LD — enables "How to" rich results in Google SERPs.
+ * Targets "how to create product photos with AI" queries with step-by-step instructions.
+ */
+const jsonLdHowTo = {
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  name: "How to Create Product Photos with AI",
+  description: "Use PhotoForge AI to turn smartphone snapshots into professional e-commerce product photos — upload, choose a background, and download.",
+  totalTime: "PT30S",
+  tool: { "@type": "HowToTool", name: "PhotoForge AI (aiproductphotomaker.com)" },
+  step: [
+    { "@type": "HowToStep", position: 1, name: "Upload your product", text: "Take a photo of your product with any smartphone — the AI handles background removal, relighting, and shadow generation." },
+    { "@type": "HowToStep", position: 2, name: "Choose a background scene", text: "Select pure white (Amazon-compliant), lifestyle scenes, gradient studio backdrops, seasonal themes, or custom colors." },
+    { "@type": "HowToStep", position: 3, name: "Download pro-quality photos", text: "Get studio-quality product images ready for Amazon, Shopify, Etsy, or any marketplace." },
+  ],
+};
+
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={`dark ${interFont.variable}`}>
@@ -187,6 +205,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdHowTo) }}
         />
         {children}
         <ExitIntentCapture />
