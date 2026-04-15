@@ -371,9 +371,12 @@ export default function PhotoForgeAILandingPage() {
             >
               Guide
             </Link>
-            <a href="/pricing" className="text-sm text-gray-400 hover:text-white transition-colors">
+            <Link
+              href="/pricing"
+              className="text-sm text-gray-400 hover:text-white transition-colors"
+            >
               Pricing
-            </a>
+            </Link>
             <a href="#faq" className="text-sm text-gray-400 hover:text-white transition-colors">
               FAQ
             </a>
@@ -407,17 +410,28 @@ export default function PhotoForgeAILandingPage() {
             with AI-generated backgrounds. No design skills needed.
           </p>
 
-          {/* Trust signals — star rating + "no CC" reassurance to complement
-           * the sparkles usage counter badge above the headline. */}
-          <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-gray-400 mb-12">
-            <span className="flex items-center gap-1.5">
-              <span className="text-yellow-400">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
-              <span>4.9/5 from 1,200+ sellers</span>
-            </span>
-            <span className="flex items-center gap-1.5">
-              <span className="text-green-400">&#10003;</span>
-              <span>No credit card required</span>
-            </span>
+          {/* Trust signals — visible social proof near the top fold to
+           * reinforce credibility before the interactive demo. */}
+          <div className="mb-12">
+            <p className="text-2xl font-bold text-white">
+              Trusted by{" "}
+              <span className="bg-gradient-to-r from-indigo-300 via-fuchsia-300 to-cyan-300 bg-clip-text text-transparent">
+                10,000+ creators
+              </span>
+            </p>
+            <p className="mt-1 text-sm text-gray-400">
+              Sellers, founders, and agencies generating launch-ready product visuals with AI
+            </p>
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-6 text-sm text-gray-400">
+              <span className="flex items-center gap-1.5">
+                <span className="text-yellow-400">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+                <span>4.9/5 from 1,200+ sellers</span>
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="text-green-400">&#10003;</span>
+                <span>No credit card required</span>
+              </span>
+            </div>
           </div>
 
           {isGenerationBlocked ? (
