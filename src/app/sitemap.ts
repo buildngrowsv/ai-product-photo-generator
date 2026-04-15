@@ -22,6 +22,7 @@
 
 import type { MetadataRoute } from "next";
 import { SEO_PAGES_CONFIG } from "@/config/seo-pages";
+import { getAllBlogSlugs } from "@/config/blog-posts";
 
 const BASE_URL = (
   process.env.NEXT_PUBLIC_APP_URL?.trim() || "https://aiproductphotomaker.com"
@@ -165,5 +166,33 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })
   );
 
-  return [...staticPages, ...hubPages, ...audiencePages, ...bestPages, ...useCasePages];
+  /**
+   * Blog index + individual article pages.
+   * Added 2026-04-14 — blog content initiative.
+   */
+  const blogIndexPage: MetadataRoute.Sitemap = [
+    {
+      url: `${BASE_URL}/blog`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.8,
+    },
+  ];
+
+  const blogPostPages: MetadataRoute.Sitemap = getAllBlogSlugs().map((slug) => ({
+    url: `${BASE_URL}/blog/${slug}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  }));
+
+  return [
+    ...staticPages,
+    ...hubPages,
+    ...audiencePages,
+    ...bestPages,
+    ...useCasePages,
+    ...blogIndexPage,
+    ...blogPostPages,
+  ];
 }
