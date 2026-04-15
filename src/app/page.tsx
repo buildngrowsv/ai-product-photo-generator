@@ -377,6 +377,12 @@ export default function PhotoForgeAILandingPage() {
             >
               Pricing
             </Link>
+            <Link
+              href="/blog"
+              className="text-sm text-gray-400 hover:text-white transition-colors"
+            >
+              Blog
+            </Link>
             <a href="#faq" className="text-sm text-gray-400 hover:text-white transition-colors">
               FAQ
             </a>
