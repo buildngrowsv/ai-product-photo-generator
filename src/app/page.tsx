@@ -444,12 +444,12 @@ export default function PhotoForgeAILandingPage() {
             >
               Create Product Photos — Free
             </a>
-            <a
+            <Link
               href="/pricing"
               className="inline-block border border-indigo-500/30 text-indigo-400 hover:bg-indigo-500/10 px-6 py-4 rounded-xl text-lg font-medium transition-all duration-300"
             >
               View Pricing
-            </a>
+            </Link>
           </div>
 
           {isGenerationBlocked ? (
@@ -876,12 +876,12 @@ export default function PhotoForgeAILandingPage() {
                   </li>
                 ))}
               </ul>
-              <a
+              <Link
                 href="/pricing"
                 className="block w-full text-center py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold transition-all duration-200 hover:scale-[1.02]"
               >
                 Upgrade to Pro
-              </a>
+              </Link>
             </div>
           </div>
         </div>
