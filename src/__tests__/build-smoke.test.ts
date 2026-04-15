@@ -61,7 +61,8 @@ describe("Build smoke tests — ai-product-photo-generator", () => {
       }),
     });
 
-    const response = await POST(request as unknown as Request);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const response = await POST(request as any);
     // 503 = FAL_KEY not set (documented in route comments)
     expect(response.status).toBe(503);
     const body = await response.json();
@@ -80,7 +81,8 @@ describe("Build smoke tests — ai-product-photo-generator", () => {
       body: JSON.stringify({}), // no 'image' or 'style'
     });
 
-    const response = await POST(request as unknown as Request);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const response = await POST(request as any);
     // 400 = Bad Request — missing required fields
     expect(response.status).toBe(400);
     const body = await response.json();
