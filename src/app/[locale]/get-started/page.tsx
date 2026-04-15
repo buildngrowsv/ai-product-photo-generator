@@ -60,6 +60,22 @@ const FEATURES = [
   { title: "Batch Processing", description: "Pro plans let you process entire product catalogs at once — ideal for sellers with hundreds of SKUs." },
 ];
 
+const FAQS = [
+  { question: "How do I create product photos with AI?", answer: "Upload a photo of your product (smartphone quality is fine), choose a background scene (white, lifestyle, gradient, seasonal, etc.), and click 'Generate.' The AI removes the original background, adjusts lighting, and creates studio-quality results in seconds." },
+  { question: "Is PhotoForge AI free to use?", answer: "Yes — you get 3 free product photo generations per day with no account required. For unlimited generations, batch processing, and higher resolution outputs, upgrade to Pro starting at $4.99/month." },
+  { question: "Are the photos good enough for Amazon listings?", answer: "Absolutely. PhotoForge AI generates pure white backgrounds that meet Amazon's main image requirements. The AI also handles shadow generation and proper lighting to make products look professional and trustworthy." },
+  { question: "What background options are available?", answer: "Choose from pure white (marketplace-compliant), lifestyle scenes (kitchen, living room, outdoor), gradient studio backdrops, seasonal themes, and custom solid colors. The AI adjusts product lighting to match each background naturally." },
+  { question: "Can I process multiple products at once?", answer: "Pro plans include batch processing — upload your entire product catalog and generate consistent, professional photos across all items. Ideal for sellers with dozens or hundreds of SKUs." },
+];
+
+const AUDIENCE_LINKS = [
+  { slug: "e-commerce-sellers", label: "E-Commerce Sellers" },
+  { slug: "amazon-fba-sellers", label: "Amazon FBA Sellers" },
+  { slug: "etsy-sellers", label: "Etsy Sellers" },
+  { slug: "marketing-agencies", label: "Marketing Agencies" },
+  { slug: "product-photographers", label: "Product Photographers" },
+];
+
 export default function GetStartedPage() {
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",

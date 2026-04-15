@@ -144,6 +144,23 @@ const jsonLdBreadcrumb = {
   ],
 };
 
+
+/**
+ * WebSite JSON-LD — establishes site identity in Google search results
+ * and enables sitelinks searchbox eligibility.
+ */
+const jsonLdWebSite = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "PhotoForge AI",
+  url: "https://aiproductphotomaker.com",
+  potentialAction: {
+    "@type": "SearchAction",
+    target: "https://aiproductphotomaker.com/?q={search_term_string}",
+    "query-input": "required name=search_term_string",
+  },
+};
+
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={`dark ${interFont.variable}`}>
@@ -156,6 +173,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdBreadcrumb) }}
+        />
+              <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdWebSite) }}
         />
       </head>
       <body className="font-sans antialiased bg-gray-950 text-white min-h-screen">

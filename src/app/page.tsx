@@ -529,7 +529,7 @@ export default function PhotoForgeAILandingPage() {
                 <div className="relative rounded-2xl overflow-hidden border border-white/10 glow-border">
                   <img
                     src={uploadedImagePreviewUrl}
-                    alt="Uploaded product"
+                    alt="Uploaded product photo ready for AI background generation"
                     className="w-full max-h-96 object-contain bg-gray-900"
                   />
                   <button
@@ -575,7 +575,7 @@ export default function PhotoForgeAILandingPage() {
                     <div className="rounded-2xl overflow-hidden border border-green-500/30 glow-border">
                       <img
                         src={generatedPhotoUrl}
-                        alt="AI-generated product photo"
+                        alt={`AI-generated professional product photo with ${PRODUCT_PHOTO_BACKGROUND_STYLE_PRESETS.find(p => p.id === selectedStylePresetId)?.name?.toLowerCase() || 'custom'} background`}
                         className="w-full max-h-96 object-contain bg-gray-900"
                       />
                     </div>
