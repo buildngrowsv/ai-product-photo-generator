@@ -10,6 +10,8 @@
  *
  * prism-exec-6847 (2026-04-14): Created — was missing entirely, causing
  * potential locale redirect interference with pSEO and static routes.
+ * vortex-build-4821 (2026-04-15): Removed blog from matcher exclusion —
+ * blog routes only exist under [locale], so excluding them caused 404.
  */
 import createMiddleware from "next-intl/middleware";
 import { routing } from "@/i18n/routing";
