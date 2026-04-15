@@ -24,7 +24,7 @@
 import type { ReactNode } from "react";
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
-import ExitIntentModal from "@/components/ExitIntentModal";
+import ExitIntentCapture from "@/components/ExitIntentCapture";
 import "./globals.css";
 
 /**
@@ -150,7 +150,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
         />
         {children}
-        <ExitIntentModal />
+        <ExitIntentCapture />
       </body>
     </html>
   );
