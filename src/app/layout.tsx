@@ -130,6 +130,20 @@ const organizationJsonLd = {
   },
 };
 
+
+/**
+ * BreadcrumbList JSON-LD — breadcrumb navigation in Google search results.
+ * Improves click-through rate by showing site hierarchy directly in SERP.
+ */
+const jsonLdBreadcrumb = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://aiproductphotomaker.com" },
+    { "@type": "ListItem", position: 2, name: "Pricing", item: "https://aiproductphotomaker.com/pricing" },
+  ],
+};
+
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={`dark ${interFont.variable}`}>
@@ -138,6 +152,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <meta
           name="google-site-verification"
           content="EvH1LfFf_PO3s16leLnD-OJjSDYeGdXpvZlk_xT5ht8"
+        />
+              <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdBreadcrumb) }}
         />
       </head>
       <body className="font-sans antialiased bg-gray-950 text-white min-h-screen">
