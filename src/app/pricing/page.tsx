@@ -1,1 +1,1 @@
-export { default, metadata } from "../[locale]/pricing/page";
+export { default, generateMetadata } from "../[locale]/pricing/page";

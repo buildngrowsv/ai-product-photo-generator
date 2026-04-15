@@ -10,22 +10,33 @@ import PricingClient from "./PricingClient";
 
 const SITE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://aiproductphotomaker.com";
 
-export const metadata: Metadata = {
-  title: "AI Product Photo Pricing — Free Plan + Pro From $11.99/mo",
-  description:
-    "Get 3 free AI product photos daily. Upgrade to Pro for unlimited high-res e-commerce shots, batch processing, and commercial license. Cancel anytime.",
-  alternates: {
-    canonical: `${SITE_URL}/pricing`,
-  },
-  openGraph: {
+/**
+ * async generateMetadata (not static export const metadata).
+ *
+ * WHY: When the parent [locale]/layout.tsx uses async generateMetadata(),
+ * Next.js RSC streaming does not reliably flush CHILD page static metadata
+ * exports into initial HTML. Googlebot sees the parent layout's title instead
+ * of the pricing-specific title. Converting to async forces Next.js to resolve
+ * this page's metadata during SSR.
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  return {
     title: "AI Product Photo Pricing — Free Plan + Pro From $11.99/mo",
     description:
       "Get 3 free AI product photos daily. Upgrade to Pro for unlimited high-res e-commerce shots, batch processing, and commercial license. Cancel anytime.",
-    url: `${SITE_URL}/pricing`,
-    type: "website",
-    images: [{ url: "/opengraph-image", width: 1200, height: 630 }],
-  },
-};
+    alternates: {
+      canonical: `${SITE_URL}/pricing`,
+    },
+    openGraph: {
+      title: "AI Product Photo Pricing — Free Plan + Pro From $11.99/mo",
+      description:
+        "Get 3 free AI product photos daily. Upgrade to Pro for unlimited high-res e-commerce shots, batch processing, and commercial license. Cancel anytime.",
+      url: `${SITE_URL}/pricing`,
+      type: "website",
+      images: [{ url: "/opengraph-image", width: 1200, height: 630 }],
+    },
+  };
+}
 
 /**
  * FAQPage JSON-LD — mirrors the FAQ section rendered in PricingClient.tsx.
