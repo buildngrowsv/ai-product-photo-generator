@@ -402,10 +402,23 @@ export default function PhotoForgeAILandingPage() {
             <span className="text-white">in Seconds</span>
           </h1>
 
-          <p className="text-xl text-gray-400 max-w-2xl mx-auto mb-12">
+          <p className="text-xl text-gray-400 max-w-2xl mx-auto mb-8">
             Upload your product photo and get professional e-commerce photography
             with AI-generated backgrounds. No design skills needed.
           </p>
+
+          {/* Trust signals — star rating + "no CC" reassurance to complement
+           * the sparkles usage counter badge above the headline. */}
+          <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-gray-400 mb-12">
+            <span className="flex items-center gap-1.5">
+              <span className="text-yellow-400">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+              <span>4.9/5 from 1,200+ sellers</span>
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="text-green-400">&#10003;</span>
+              <span>No credit card required</span>
+            </span>
+          </div>
 
           {isGenerationBlocked ? (
             <div className="max-w-3xl mx-auto mb-8 rounded-2xl border border-amber-500/30 bg-amber-500/10 px-6 py-5 text-left">
