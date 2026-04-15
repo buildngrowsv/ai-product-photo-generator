@@ -349,27 +349,56 @@ export async function isProActiveFromStripe(
     }
 
     const data = await response.json() as {
-      data: Array<{ payment_status: string }>;
+      data: Array<{ payment_status: string; subscription?: string | null }>;
     };
 
-    // A paid checkout session confirms Pro status — the customer completed payment
-    const hasPaidSession = data.data?.some(
+    // Find a paid checkout session
+    const paidSession = data.data?.find(
       (session) => session.payment_status === "paid"
     );
 
-    _stripeFallbackCache.set(token, {
-      isPro: hasPaidSession ?? false,
-      cachedAt: Date.now(),
-    });
-
-    if (hasPaidSession) {
-      console.log(
-        "[subscription-store] isProActiveFromStripe: Stripe confirms paid session",
-        { token: token.slice(0, 8) + "..." }
-      );
+    if (!paidSession) {
+      _stripeFallbackCache.set(token, { isPro: false, cachedAt: Date.now() });
+      return false;
     }
 
-    return hasPaidSession ?? false;
+    // Subscription cancellation check: a cancelled subscription's checkout
+    // session still shows payment_status "paid" because the original payment
+    // succeeded. Verify the subscription is still active before granting Pro.
+    if (paidSession.subscription) {
+      const subResponse = await fetch(
+        `https://api.stripe.com/v1/subscriptions/${paidSession.subscription}`,
+        { method: "GET", headers: { Authorization: `Bearer ${stripeKey}` } }
+      );
+
+      if (subResponse.ok) {
+        const subData = await subResponse.json() as { status: string };
+        const isActive = subData.status === "active" || subData.status === "trialing";
+        if (!isActive) {
+          console.log(
+            `[subscription-store] isProActiveFromStripe: subscription ${paidSession.subscription} status="${subData.status}" — NOT Pro`,
+            { token: token.slice(0, 8) + "..." }
+          );
+          _stripeFallbackCache.set(token, { isPro: false, cachedAt: Date.now() });
+          return false;
+        }
+      } else {
+        console.warn(
+          `[subscription-store] isProActiveFromStripe: subscription check returned ${subResponse.status} — denying Pro`,
+          { token: token.slice(0, 8) + "..." }
+        );
+        _stripeFallbackCache.set(token, { isPro: false, cachedAt: Date.now() });
+        return false;
+      }
+    }
+
+    // Paid + subscription active (or one-time payment)
+    _stripeFallbackCache.set(token, { isPro: true, cachedAt: Date.now() });
+    console.log(
+      "[subscription-store] isProActiveFromStripe: Stripe confirms paid session",
+      { token: token.slice(0, 8) + "..." }
+    );
+    return true;
   } catch (err) {
     // Network error, DNS failure, etc. — fail closed, cache the negative result
     console.warn("[subscription-store] isProActiveFromStripe: fetch error", err);
