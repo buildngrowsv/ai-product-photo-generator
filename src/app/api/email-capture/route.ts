@@ -75,13 +75,45 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: "Invalid email address" }, { status: 400 });
   }
 
-  try {
-    // ai-product-photo-generator does not use Drizzle ORM — leads are logged to Vercel
-    // function logs where the operator can export them. Add a proper DB insert
-    // here when Neon/Postgres is wired up for this product.
-    console.info(`[email-capture] Lead: ${email.slice(0, 3)}***@${email.split("@")[1]} source=${source} ip=${clientIp.slice(0, 8)}***`);
-  } catch (storageError) {
-    console.error("[email-capture] Storage error (non-fatal):", storageError);
+  /**
+   * Attempt to store the lead via Resend Contacts API for remarketing.
+   * Falls back to console logging when RESEND_API_KEY / RESEND_AUDIENCE_ID
+   * are not configured (local dev, env not yet set).
+   * Never fails the request — email capture infra issues must not block the bonus.
+   */
+  const resendApiKey = process.env.RESEND_API_KEY?.trim();
+  const audienceId = process.env.RESEND_AUDIENCE_ID?.trim();
+
+  if (resendApiKey && audienceId) {
+    try {
+      const response = await fetch("https://api.resend.com/contacts", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${resendApiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          audience_id: audienceId,
+          email,
+          unsubscribed: false,
+          first_name: "",
+          last_name: "",
+        }),
+      });
+
+      if (!response.ok) {
+        const errorBody = await response.text();
+        console.error(`[email-capture] Resend error (${response.status}): ${errorBody}`);
+      } else {
+        console.info(`[email-capture] Added to Resend: ${email.slice(0, 3)}***@${email.split("@")[1]} source=${source}`);
+      }
+    } catch (err) {
+      console.error("[email-capture] Resend request failed:", err);
+    }
+  } else {
+    console.info(
+      `[email-capture] Lead (no Resend): ${email.slice(0, 3)}***@${email.split("@")[1]} source=${source} ip=${clientIp.slice(0, 8)}***`
+    );
   }
 
   return NextResponse.json(

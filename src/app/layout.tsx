@@ -71,6 +71,7 @@ export const metadata: Metadata = {
     url: "https://aiproductphotomaker.com",
     siteName: "PhotoForge AI",
   },
+  twitter: { card: "summary_large_image" },
   robots: { index: true, follow: true },
 };
 
