@@ -32,6 +32,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { BreadcrumbJsonLd } from "@/components/BreadcrumbJsonLd";
+import { SeoCrossLinks } from "@/components/SeoCrossLinks";
+import { SeoInternalLinks } from "@/components/SeoInternalLinks";
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -494,6 +496,10 @@ export default function VsPixelcutPage() {
             </Link>
           </div>
         </section>
+
+        {/* Cross-links and internal links for crawlability */}
+        <SeoCrossLinks currentCategory="vs" currentSlug="pixelcut" />
+        <SeoInternalLinks />
 
         {/* ── Footer ── */}
         <footer className="border-t border-gray-800 py-8 text-center text-sm text-gray-500">
