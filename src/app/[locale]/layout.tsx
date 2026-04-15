@@ -296,6 +296,8 @@ export default async function LocaleLayout({
 
   return (
     <>
+      {/* Set correct lang attribute — root layout hardcodes "en" for pSEO pages */}
+      <script dangerouslySetInnerHTML={{ __html: `document.documentElement.lang="${locale}"` }} />
       {/* SoftwareApplication rich snippet for Google */}
       <script
         type="application/ld+json"
