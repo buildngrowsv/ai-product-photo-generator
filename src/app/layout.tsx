@@ -23,6 +23,7 @@
  */
 import type { ReactNode } from "react";
 import type { Metadata, Viewport } from "next";
+import ExitIntentModal from "@/components/ExitIntentModal";
 import "./globals.css";
 
 export const viewport: Viewport = {
@@ -73,6 +74,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       </head>
       <body className="font-sans antialiased bg-gray-950 text-white min-h-screen">
         {children}
+        <ExitIntentModal />
       </body>
     </html>
   );
