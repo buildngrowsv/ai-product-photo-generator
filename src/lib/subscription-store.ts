@@ -245,3 +245,135 @@ export async function isProActive(token: string | null | undefined): Promise<boo
   const status = await checkTokenStatus(token);
   return status === "active";
 }
+
+// -------------------------------------------------------------------------
+// Stripe API Fallback for Pro Verification (no Redis required)
+// -------------------------------------------------------------------------
+
+/**
+ * In-memory cache for Stripe API fallback lookups.
+ *
+ * WHY THIS EXISTS:
+ * When Upstash Redis is not provisioned (which is the case for many clones in
+ * early deployment), isProActive() always returns false — even for customers
+ * who have paid via Stripe. This means paying customers are stuck on free tier.
+ *
+ * The Stripe API fallback queries Stripe's checkout sessions endpoint directly
+ * using the token (which was stored as client_reference_id during checkout).
+ * If Stripe confirms a paid session exists for that token, the user is Pro.
+ *
+ * WHY IN-MEMORY CACHE IS OK HERE (but NOT for credits):
+ * This is a read-only cache of Stripe's immutable payment records. A cold start
+ * just means one extra Stripe API call — the source of truth (Stripe) is always
+ * available. Unlike credits/usage counters, there's no state mutation risk.
+ * The 5-minute TTL prevents hammering Stripe's API on every generate request.
+ *
+ * LIFECYCLE:
+ * 1. isProActive() checks Redis first (fast, durable)
+ * 2. If Redis returns null/false → isProActiveFromStripe() queries Stripe API
+ * 3. Stripe confirms paid session → user gets Pro access
+ * 4. Result cached for 5 minutes to avoid repeated API calls
+ *
+ * This pattern was introduced fleet-wide to unblock revenue while Upstash
+ * provisioning is pending (BridgeMind: clone-factory quality gates).
+ */
+const _stripeFallbackCache = new Map<string, { isPro: boolean; cachedAt: number }>();
+const STRIPE_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
+/**
+ * isProActiveFromStripe — Stripe API fallback for Pro status verification.
+ *
+ * Queries Stripe's checkout sessions by client_reference_id (the token) to
+ * determine if a paid session exists. This bypasses Redis entirely and goes
+ * straight to the payment processor as the source of truth.
+ *
+ * WHEN THIS IS CALLED:
+ * Only after isProActive() (Redis check) returns false. This ensures we don't
+ * add unnecessary Stripe API latency when Redis is healthy.
+ *
+ * FAIL-CLOSED DESIGN:
+ * Any error (network, auth, malformed response) returns false. We never grant
+ * Pro access on an ambiguous signal — the user stays on free tier and can retry.
+ * This is the conservative choice: false negatives are recoverable (user retries
+ * or contacts support), false positives leak revenue.
+ *
+ * SECURITY:
+ * - STRIPE_SECRET_KEY is server-side only (never exposed to client)
+ * - Token must be >= 10 chars (rejects empty/garbage values before API call)
+ * - Newline trimming on the key prevents the common Vercel env var bug where
+ *   `echo` appends \n (see deploy-readiness-checklist.md)
+ *
+ * @param token - The x-pro-token from the client (originally a UUID from checkout)
+ * @returns true if Stripe has a paid checkout session for this token
+ */
+export async function isProActiveFromStripe(
+  token: string | null | undefined
+): Promise<boolean> {
+  if (!token || typeof token !== "string" || token.length < 10) return false;
+
+  // Check in-memory cache first to avoid repeated Stripe API calls
+  const cached = _stripeFallbackCache.get(token);
+  if (cached && Date.now() - cached.cachedAt < STRIPE_CACHE_TTL_MS) {
+    return cached.isPro;
+  }
+
+  // Trim the Stripe secret key — Vercel env vars set via `echo` often have
+  // trailing newlines that cause 401 errors (see deploy-readiness-checklist.md)
+  const stripeKey = process.env.STRIPE_SECRET_KEY?.replace(/[\s\n\r\\n]+$/g, "").trim();
+  if (!stripeKey) {
+    // No Stripe key configured — can't verify, fail closed
+    return false;
+  }
+
+  try {
+    // Query Stripe for checkout sessions with this token as client_reference_id.
+    // The token was set during create-checkout and Stripe indexes it for lookup.
+    const url = new URL("https://api.stripe.com/v1/checkout/sessions");
+    url.searchParams.set("client_reference_id", token);
+    url.searchParams.set("limit", "1");
+
+    const response = await fetch(url.toString(), {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${stripeKey}`,
+      },
+    });
+
+    if (!response.ok) {
+      console.warn(
+        "[subscription-store] isProActiveFromStripe: Stripe API returned non-OK status",
+        { status: response.status, token: token.slice(0, 8) + "..." }
+      );
+      _stripeFallbackCache.set(token, { isPro: false, cachedAt: Date.now() });
+      return false;
+    }
+
+    const data = await response.json() as {
+      data: Array<{ payment_status: string }>;
+    };
+
+    // A paid checkout session confirms Pro status — the customer completed payment
+    const hasPaidSession = data.data?.some(
+      (session) => session.payment_status === "paid"
+    );
+
+    _stripeFallbackCache.set(token, {
+      isPro: hasPaidSession ?? false,
+      cachedAt: Date.now(),
+    });
+
+    if (hasPaidSession) {
+      console.log(
+        "[subscription-store] isProActiveFromStripe: Stripe confirms paid session",
+        { token: token.slice(0, 8) + "..." }
+      );
+    }
+
+    return hasPaidSession ?? false;
+  } catch (err) {
+    // Network error, DNS failure, etc. — fail closed, cache the negative result
+    console.warn("[subscription-store] isProActiveFromStripe: fetch error", err);
+    _stripeFallbackCache.set(token, { isPro: false, cachedAt: Date.now() });
+    return false;
+  }
+}

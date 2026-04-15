@@ -48,7 +48,7 @@ import {
   checkIpRateLimit,
   extractClientIpAddress,
 } from "@/lib/server-ip-rate-limiter";
-import { isProActive } from "@/lib/subscription-store";
+import { isProActive, isProActiveFromStripe } from "@/lib/subscription-store";
 
 /**
  * Maximum image size in bytes (10MB). Product photos shouldn't be larger
@@ -184,7 +184,38 @@ export async function POST(request: NextRequest) {
    * See: src/lib/subscription-store.ts for the full token lifecycle docs.
    */
   const proToken = request.headers.get("x-pro-token");
-  const isUserProSubscriber = await isProActive(proToken);
+  let isUserProSubscriber = await isProActive(proToken);
+
+  /**
+   * STRIPE API FALLBACK (2026-04-14, fleet-wide fix):
+   *
+   * WHY THIS EXISTS:
+   * When Upstash Redis is not provisioned, isProActive() always returns false
+   * because it can't read the token from Redis. This means paying customers
+   * who completed Stripe checkout are stuck on free tier — they paid but get
+   * rate-limited like anonymous users. $0 revenue despite successful payments.
+   *
+   * HOW IT WORKS:
+   * If Redis says "not Pro", we fall back to querying Stripe's API directly.
+   * Stripe stores the token as client_reference_id on the checkout session.
+   * If Stripe has a paid session for this token → the customer is Pro.
+   *
+   * PERFORMANCE:
+   * isProActiveFromStripe() has a 5-minute in-memory cache, so repeated
+   * requests from the same Pro user don't hit Stripe's API every time.
+   * The cache resets on cold start, but that just means one extra API call.
+   *
+   * PRIORITY ORDER:
+   * 1. Redis (fast, durable) — checked by isProActive() above
+   * 2. Stripe API (slower, always available) — checked here as fallback
+   * 3. If both fail → user stays on free tier (fail-closed, conservative)
+   *
+   * This fallback becomes a no-op once Upstash Redis is provisioned, because
+   * isProActive() will return true from Redis before we reach this code.
+   */
+  if (!isUserProSubscriber && proToken) {
+    isUserProSubscriber = await isProActiveFromStripe(proToken);
+  }
 
   /**
    * Step 3b: Rate limit check — only for free-tier users.

@@ -125,19 +125,31 @@ export async function POST(request: NextRequest) {
         const activated = await activateToken(subscriptionToken);
 
         if (!activated) {
-
-          console.error("[stripe-webhook] CRITICAL: activateToken failed — returning 500 so Stripe retries");
-
-          return NextResponse.json(
-
-            { received: true, processed: false, error: "Token activation failed — Redis unavailable" },
-
-            { status: 500 }
-
+          // WHY 200 (not 500) when activation fails:
+          // Returning 500 causes Stripe to retry the webhook forever (up to 72h).
+          // But if Redis is not provisioned, retries will NEVER succeed — the bug
+          // is infrastructure, not transient. Meanwhile the customer never gets Pro.
+          //
+          // Returning 200 tells Stripe "we received it, stop retrying." The Stripe
+          // API fallback (isProActiveFromStripe) in the generate route will verify
+          // Pro status directly against Stripe's checkout sessions — so the customer
+          // still gets Pro access even without Redis.
+          //
+          // Root cause reference: clone-factory-quality-gates.md — "Webhook returns
+          // 500 on Redis failure → DB writes never execute → payment lost"
+          console.warn(
+            "[stripe-webhook] WARNING: activateToken failed (Redis likely unavailable). " +
+              "Returning 200 to prevent infinite Stripe retries. " +
+              "Pro status will be verified via Stripe API fallback in /api/generate.",
+            { token: subscriptionToken.slice(0, 8) + "..." }
           );
-
+        } else {
+          console.log("[webhook] checkout.session.completed: token activated via Redis", {
+            token: subscriptionToken.slice(0, 8) + "...",
+          });
         }
-        console.log("[webhook] checkout.session.completed: token activated", {
+
+        console.log("[webhook] checkout.session.completed: processed", {
           sessionId: session["id"],
           token: subscriptionToken.slice(0, 8) + "…",
         });
