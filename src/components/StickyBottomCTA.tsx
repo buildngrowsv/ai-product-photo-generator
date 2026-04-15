@@ -15,17 +15,24 @@ import Link from "next/link";
 const DISMISS_KEY = "sticky-cta-dismissed";
 const COOLDOWN_MS = 24 * 60 * 60 * 1000; // 24 hours
 
+/**
+ * Check whether the CTA is still within its 24-hour dismissal cooldown.
+ * Reads localStorage once; called lazily as the useState initializer so we
+ * never call setState() inside a useEffect body (which triggers the lint rule).
+ */
+function isCooldownActive(): boolean {
+  if (typeof window === "undefined") return true; // SSR — default to hidden
+  const dismissedAt = localStorage.getItem(DISMISS_KEY);
+  return !!dismissedAt && Date.now() - Number(dismissedAt) < COOLDOWN_MS;
+}
+
 export default function StickyBottomCTA() {
   const [visible, setVisible] = useState(false);
-  const [dismissed, setDismissed] = useState(true);
+  // Lazy initializer reads localStorage once on mount — avoids setState-in-effect lint error
+  const [dismissed, setDismissed] = useState<boolean>(isCooldownActive);
 
   useEffect(() => {
-    /* Check localStorage for prior dismissal within cooldown window */
-    const dismissedAt = localStorage.getItem(DISMISS_KEY);
-    if (dismissedAt && Date.now() - Number(dismissedAt) < COOLDOWN_MS) {
-      return; // still in cooldown
-    }
-    setDismissed(false);
+    if (dismissed) return; // already in cooldown — no scroll listener needed
 
     const onScroll = () => {
       /* Show after scrolling 600px (roughly past the hero section) */
@@ -34,7 +41,7 @@ export default function StickyBottomCTA() {
 
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  }, [dismissed]);
 
   const handleDismiss = () => {
     setDismissed(true);
