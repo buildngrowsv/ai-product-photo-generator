@@ -153,7 +153,10 @@ export async function generateMetadata({
   return {
     metadataBase: new URL(siteUrl),
     verification: { google: "EvH1LfFf_PO3s16leLnD-OJjSDYeGdXpvZlk_xT5ht8" },
-    title: t("title"),
+    title: {
+      template: "%s | PhotoForge AI",
+      default: t("title"),
+    },
     description: t("description"),
     keywords: [
       "ai product photo generator",
