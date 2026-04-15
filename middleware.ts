@@ -10,8 +10,10 @@
  *
  * prism-exec-6847 (2026-04-14): Created — was missing entirely, causing
  * potential locale redirect interference with pSEO and static routes.
- * vortex-build-4821 (2026-04-15): Removed blog from matcher exclusion —
- * blog routes only exist under [locale], so excluding them caused 404.
+ * vortex-build-4821 (2026-04-15): Added standalone blog/ routes (matching
+ * all other DD clones) and restored blog in matcher exclusion. next-intl
+ * localePrefix "as-needed" doesn't rewrite nested dynamic routes for the
+ * default locale, so standalone routes are required alongside [locale] ones.
  */
 import createMiddleware from "next-intl/middleware";
 import { routing } from "@/i18n/routing";
@@ -21,5 +23,5 @@ export default createMiddleware(routing);
 export const config = {
   // Match all routes except: API routes, Next.js internals, Vercel internals,
   // static files, and pSEO/marketing routes that must be directly accessible
-  matcher: ["/((?!api|_next|_vercel|privacy|privacy-policy|terms|terms-of-service|refund-policy|refund|vs|for|best|use-cases|lp|testimonials|ai-|get-started|contact|guide|amazon-product-photos|photoroom-alternative|about|.*\\..*).*)"],
+  matcher: ["/((?!api|_next|_vercel|privacy|privacy-policy|terms|terms-of-service|refund-policy|refund|vs|for|best|use-cases|lp|testimonials|ai-|get-started|blog|contact|guide|amazon-product-photos|photoroom-alternative|about|.*\\..*).*)"],
 };
