@@ -124,6 +124,7 @@ export async function POST(request: NextRequest) {
     `client_reference_id=${encodeURIComponent(subscriptionToken)}`,
     `metadata[plan]=${encodeURIComponent(plan)}`,
     `metadata[source]=product-photo-generator`,
+    `subscription_data[metadata][proToken]=${encodeURIComponent(subscriptionToken)}`,
   ];
 
   // POST directly to Stripe REST API — no SDK, no keep-alive issues.

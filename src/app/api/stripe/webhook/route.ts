@@ -39,7 +39,7 @@
 export const runtime = "nodejs";
 
 import { NextRequest, NextResponse } from "next/server";
-import { activateToken } from "@/lib/subscription-store";
+import { activateToken, cancelToken } from "@/lib/subscription-store";
 
 export const dynamic = "force-dynamic";
 
@@ -176,14 +176,25 @@ export async function POST(request: NextRequest) {
     }
 
     case "customer.subscription.deleted": {
-      // Subscription cancelled or expired. The token will expire naturally
-      // at its 13-month TTL. For immediate revocation, store a
-      // subscriptionId → token mapping at checkout creation time.
-      const subscription = event.data.object;
-      console.log("[webhook] customer.subscription.deleted", {
-        id: subscription["id"],
-        customer: subscription["customer"],
-      });
+      // Subscription cancelled or expired — revoke Pro access immediately.
+      // The proToken is stored in subscription_data.metadata at checkout creation.
+      const deletedSub = event.data.object;
+      const proToken = (deletedSub["metadata"] as Record<string, string> | undefined)?.["proToken"];
+
+      if (proToken) {
+        await cancelToken(proToken);
+        console.log("[webhook] customer.subscription.deleted — token cancelled", {
+          id: deletedSub["id"],
+          token: proToken.slice(0, 8) + "…",
+        });
+      } else {
+        // Pre-fix subscriptions don't have proToken in metadata.
+        // Token will expire at its natural 13-month TTL.
+        console.warn("[webhook] customer.subscription.deleted — no proToken in metadata", {
+          id: deletedSub["id"],
+          customer: deletedSub["customer"],
+        });
+      }
       break;
     }
 
