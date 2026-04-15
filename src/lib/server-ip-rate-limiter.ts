@@ -17,7 +17,7 @@
  *
  * POSTURE:
  * - We pay for fal.ai calls with our server-side `FAL_KEY`
- * - Free tier: 5 generations per IP per 24-hour sliding window
+ * - Free tier: 3 generations per IP per 24-hour sliding window
  * - Storage: Upstash Redis REST (`UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN`)
  * - Failure mode: FAIL CLOSED — if Upstash is not configured, anonymous
  *   traffic is blocked rather than being silently admitted
@@ -33,8 +33,8 @@ import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 import type { NextRequest } from "next/server";
 
-/** Free generations allowed per IP per 24h rolling window */
-const MAX_FREE_GENERATIONS_PER_IP = 5;
+/** Free generations allowed per IP per 24h rolling window — aligned with pricing (3/day) */
+const MAX_FREE_GENERATIONS_PER_IP = 3;
 
 /** Duration constant for retryAfter fallback when Upstash reset time is unavailable */
 const RATE_LIMIT_WINDOW_MS = 24 * 60 * 60 * 1000;
