@@ -96,7 +96,7 @@ export default function VsIndexPage() {
             "@context": "https://schema.org",
             "@type": "CollectionPage",
             name: metadata.title,
-            url: canonicalUrl,
+            url: `${SITE_URL}/vs`,
             mainEntity: {
               "@type": "ItemList",
               itemListElement: COMPARISONS.map((comp, index) => ({
