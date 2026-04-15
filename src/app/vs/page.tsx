@@ -73,6 +73,16 @@ const COMPARISONS = [
       "Simple upload-and-generate workflow",
     ],
   },
+  {
+    slug: "pixelcut",
+    name: "Pixelcut",
+    tagline: "No watermarks free vs watermarked exports on Pixelcut's free tier",
+    highlights: [
+      "3 free photos, no watermarks — Pixelcut watermarks all free exports",
+      "More AI generation styles vs template-based backgrounds",
+      "Purpose-built e-commerce workflow",
+    ],
+  },
 ];
 
 export default function VsIndexPage() {
