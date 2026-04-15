@@ -62,6 +62,37 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
+/**
+ * SoftwareApplication JSON-LD — placed in root layout so curl to `/` (without
+ * locale prefix) returns structured data for Google. The [locale]/layout also
+ * has this schema; duplicates are harmless — Google deduplicates by @type+name.
+ * Without this, production homepage audit shows SoftwareApplication FAIL.
+ */
+const softwareAppJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "PhotoForge AI — AI Product Photo Generator",
+  applicationCategory: "DesignApplication",
+  operatingSystem: "Web",
+  url: "https://aiproductphotomaker.com",
+  description:
+    "Generate stunning product photos instantly with AI. Upload your product, pick a background style, and get professional e-commerce photos in seconds. Free to try.",
+  offers: {
+    "@type": "AggregateOffer",
+    lowPrice: "0",
+    highPrice: "11.99",
+    priceCurrency: "USD",
+    offerCount: 2,
+  },
+  featureList: [
+    "AI-powered product photo generation",
+    "White studio and lifestyle scene backgrounds",
+    "Optimized for Amazon, Shopify, and Etsy listings",
+    "No photography skills required",
+    "Instant results from product uploads",
+  ],
+};
+
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className="dark">
@@ -73,6 +104,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         />
       </head>
       <body className="font-sans antialiased bg-gray-950 text-white min-h-screen">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareAppJsonLd) }}
+        />
         {children}
         <ExitIntentModal />
       </body>
