@@ -37,6 +37,7 @@ import {
   trackProductPhotoRequested,
 } from "@/lib/analytics/ga4-web-events";
 import { SeoInternalLinks } from "@/components/SeoInternalLinks";
+import TrustBadges from "@/components/TrustBadges";
 import {
   Upload,
   Sparkles,
@@ -623,6 +624,9 @@ export default function PhotoForgeAILandingPage() {
           </div>
         </div>
       </section>
+
+      {/* Trust / security badges — conversion-critical social proof strip */}
+      <TrustBadges />
 
       {/* ===================== HOW IT WORKS ===================== */}
       <section className="py-20 px-4 border-t border-white/5">
