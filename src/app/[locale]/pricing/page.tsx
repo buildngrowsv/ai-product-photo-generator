@@ -11,16 +11,16 @@ import PricingClient from "./PricingClient";
 const SITE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://aiproductphotomaker.com";
 
 export const metadata: Metadata = {
-  title: "Pricing | PhotoForge AI",
+  title: "AI Product Photo Pricing — Free Plan + Pro From $11.99/mo",
   description:
-    "Free tier and Pro plan for AI product photo generation — upgrade for unlimited studio-quality output.",
+    "Get 3 free AI product photos daily. Upgrade to Pro for unlimited high-res e-commerce shots, batch processing, and commercial license. Cancel anytime.",
   alternates: {
     canonical: `${SITE_URL}/pricing`,
   },
   openGraph: {
-    title: "Pricing | PhotoForge AI",
+    title: "AI Product Photo Pricing — Free Plan + Pro From $11.99/mo",
     description:
-      "Free tier and Pro plan for AI product photo generation — upgrade for unlimited studio-quality output.",
+      "Get 3 free AI product photos daily. Upgrade to Pro for unlimited high-res e-commerce shots, batch processing, and commercial license. Cancel anytime.",
     url: `${SITE_URL}/pricing`,
     type: "website",
     images: [{ url: "/opengraph-image", width: 1200, height: 630 }],
