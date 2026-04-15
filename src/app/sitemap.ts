@@ -186,7 +186,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
-  return [
+  /**
+   * Locale-aware entries — each English page gets hreflang alternates
+   * for all 5 locales (en/es/fr/de/pt), plus separate entries for each
+   * non-English locale so Google discovers and indexes every variant.
+   */
+  const NON_DEFAULT_LOCALES = ["es", "fr", "de", "pt"] as const;
+
+  const allEnglishOnly = [
     ...staticPages,
     ...hubPages,
     ...audiencePages,
@@ -195,4 +202,29 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...blogIndexPage,
     ...blogPostPages,
   ];
+
+  const withLocales: MetadataRoute.Sitemap = [];
+  for (const entry of allEnglishOnly) {
+    const path = entry.url.replace(BASE_URL, "");
+    const languageAlternates: Record<string, string> = {
+      en: `${BASE_URL}${path}`,
+    };
+    for (const loc of NON_DEFAULT_LOCALES) {
+      languageAlternates[loc] = `${BASE_URL}/${loc}${path || "/"}`;
+    }
+    withLocales.push({
+      ...entry,
+      alternates: { languages: languageAlternates },
+    });
+    for (const loc of NON_DEFAULT_LOCALES) {
+      withLocales.push({
+        url: `${BASE_URL}/${loc}${path || "/"}`,
+        lastModified: entry.lastModified,
+        changeFrequency: entry.changeFrequency,
+        priority: Math.max(0.1, (entry.priority ?? 0.5) - 0.05),
+      });
+    }
+  }
+
+  return withLocales;
 }
