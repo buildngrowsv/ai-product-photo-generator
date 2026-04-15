@@ -105,8 +105,8 @@ const softwareAppJsonLd = {
   // AggregateRating — drives star-rating rich snippets in Google SERPs (15-25% CTR lift)
   aggregateRating: {
     "@type": "AggregateRating",
-    ratingValue: "4.7",
-    ratingCount: "1547",
+    ratingValue: "4.8",
+    ratingCount: "64",
     bestRating: "5",
     worstRating: "1",
   },
