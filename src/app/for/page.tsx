@@ -18,6 +18,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { SEO_PAGES_CONFIG } from "@/config/seo-pages";
 
+import { SeoCrossLinks } from "@/components/SeoCrossLinks";
+import { SeoInternalLinks } from "@/components/SeoInternalLinks";
 const SITE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://aiproductphotomaker.com";
 
 export const metadata: Metadata = {
@@ -136,7 +138,11 @@ export default function ForHubPage() {
               Powered by SymplyAI
             </a>
           </div>
-        </div>
+        
+            {/* Cross-links and internal links for crawlability */}
+            <SeoCrossLinks currentCategory="for" currentSlug="" />
+            <SeoInternalLinks />
+</div>
       </footer>
     </main>
   );
