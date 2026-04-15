@@ -908,6 +908,9 @@ export default function PhotoForgeAILandingPage() {
               <Link href="/pricing" className="hover:text-white transition-colors">
                 Pricing
               </Link>
+              <Link href="/blog" className="hover:text-white transition-colors">
+                Blog
+              </Link>
               <Link href="/privacy" className="hover:text-white transition-colors">
                 Privacy
               </Link>
