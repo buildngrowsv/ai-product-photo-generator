@@ -25,6 +25,7 @@ import type { ReactNode } from "react";
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import ExitIntentCapture from "@/components/ExitIntentCapture";
+import StickyBottomCTA from "@/components/StickyBottomCTA";
 import "./globals.css";
 
 /**
@@ -212,6 +213,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         />
         {children}
         <ExitIntentCapture />
+        <StickyBottomCTA />
       </body>
     </html>
   );
