@@ -58,16 +58,16 @@ export const viewport: Viewport = {
  */
 export const metadata: Metadata = {
   metadataBase: new URL("https://aiproductphotomaker.com"),
-  title: "AI Product Photo Generator — Professional Product Photography in Seconds | Free",
+  title: "AI Product Photo Generator — Free, Studio-Quality in Seconds",
   description:
-    "Create studio-quality product photos with AI. Upload your product, choose a scene, get e-commerce-ready images instantly. No photographer needed. Free to start.",
+    "Replace $500 photo shoots with AI. Upload your product, pick a background, get e-commerce-ready photos in 10 seconds. Free to try — no signup needed.",
   alternates: {
     canonical: "https://aiproductphotomaker.com",
   },
   openGraph: {
-    title: "AI Product Photo Generator — Professional Product Photography in Seconds | Free",
+    title: "AI Product Photo Generator — Free, Studio-Quality in Seconds",
     description:
-      "Create studio-quality product photos with AI. Upload your product, choose a scene, get e-commerce-ready images instantly. Free to start.",
+      "Replace $500 photo shoots with AI. Upload your product, pick a background, get e-commerce-ready photos in 10 seconds. Free to try — no signup needed.",
     type: "website",
     url: "https://aiproductphotomaker.com",
     siteName: "PhotoForge AI",
