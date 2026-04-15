@@ -19,5 +19,5 @@ export default createMiddleware(routing);
 export const config = {
   // Match all routes except: API routes, Next.js internals, Vercel internals,
   // static files, and pSEO/marketing routes that must be directly accessible
-  matcher: ["/((?!api|_next|_vercel|privacy|privacy-policy|terms|terms-of-service|refund-policy|refund|vs|for|best|use-cases|blog|lp|testimonials|ai-|get-started|guide|amazon-product-photos|photoroom-alternative|about|.*\\..*).*)"],
+  matcher: ["/((?!api|_next|_vercel|privacy|privacy-policy|terms|terms-of-service|refund-policy|refund|vs|for|best|use-cases|lp|testimonials|ai-|get-started|guide|amazon-product-photos|photoroom-alternative|about|.*\\..*).*)"],
 };
