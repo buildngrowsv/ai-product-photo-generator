@@ -133,6 +133,9 @@ const organizationJsonLd = {
     contactType: "customer support",
     url: "https://aiproductphotomaker.com/contact",
   },
+  sameAs: [
+    "https://symplyai.io",
+  ],
 };
 
 
