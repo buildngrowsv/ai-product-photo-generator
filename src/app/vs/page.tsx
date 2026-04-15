@@ -83,6 +83,16 @@ const COMPARISONS = [
       "Purpose-built e-commerce workflow",
     ],
   },
+  {
+    slug: "mokker",
+    name: "Mokker AI",
+    tagline: "Try free vs Mokker's $19/month entry with no free tier at all",
+    highlights: [
+      "3 free photos, no credit card — Mokker requires payment before first photo",
+      "$11.99/mo unlimited vs $19/mo capped at 50 images",
+      "No monthly image caps on any plan",
+    ],
+  },
 ];
 
 export default function VsIndexPage() {
