@@ -205,6 +205,58 @@ export async function cancelToken(token: string): Promise<void> {
 }
 
 /**
+ * subIdToTokenKey — Redis key mapping stripeSubscriptionId → token.
+ *
+ * The customer.subscription.deleted webhook event does NOT carry the
+ * client_reference_id. This reverse lookup lets us find and cancel the
+ * token when a subscription is deleted.
+ */
+function subIdToTokenKey(stripeSubscriptionId: string): string {
+  return `productphoto:sub:subid:${stripeSubscriptionId}`;
+}
+
+/**
+ * storeSubscriptionTokenMapping — saves stripeSubscriptionId → token in Redis.
+ *
+ * Called by the webhook's checkout.session.completed handler AFTER activateToken()
+ * succeeds. TTL matches ACTIVE_TTL_SECONDS so the mapping lives as long as the token.
+ */
+export async function storeSubscriptionTokenMapping(
+  stripeSubscriptionId: string,
+  token: string
+): Promise<void> {
+  const redis = getRedisClient();
+  if (!redis) return;
+
+  try {
+    await redis.setex(subIdToTokenKey(stripeSubscriptionId), ACTIVE_TTL_SECONDS, token);
+  } catch (err) {
+    console.error("[subscription-store] storeSubscriptionTokenMapping: Redis write failed:", err);
+  }
+}
+
+/**
+ * getTokenForSubscription — retrieves the token for a stripeSubscriptionId.
+ *
+ * Called by the webhook's customer.subscription.deleted handler to find the
+ * token that needs to be cancelled. Returns null if no mapping exists.
+ */
+export async function getTokenForSubscription(
+  stripeSubscriptionId: string
+): Promise<string | null> {
+  const redis = getRedisClient();
+  if (!redis) return null;
+
+  try {
+    const token = await redis.get<string>(subIdToTokenKey(stripeSubscriptionId));
+    return token ?? null;
+  } catch (err) {
+    console.error("[subscription-store] getTokenForSubscription: Redis read failed:", err);
+    return null;
+  }
+}
+
+/**
  * checkTokenStatus — returns the subscription status or null if not found/Redis down.
  */
 export async function checkTokenStatus(

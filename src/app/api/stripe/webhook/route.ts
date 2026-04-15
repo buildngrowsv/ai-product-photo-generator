@@ -39,7 +39,7 @@
 export const runtime = "nodejs";
 
 import { NextRequest, NextResponse } from "next/server";
-import { activateToken, cancelToken } from "@/lib/subscription-store";
+import { activateToken, cancelToken, storeSubscriptionTokenMapping, getTokenForSubscription } from "@/lib/subscription-store";
 
 export const dynamic = "force-dynamic";
 
@@ -144,6 +144,13 @@ export async function POST(request: NextRequest) {
             { token: subscriptionToken.slice(0, 8) + "..." }
           );
         } else {
+          // Store subscriptionId → token reverse mapping for cancellation lookups
+          const subscriptionIdForMapping =
+            typeof session.subscription === "string" ? session.subscription : null;
+          if (subscriptionIdForMapping) {
+            await storeSubscriptionTokenMapping(subscriptionIdForMapping, subscriptionToken);
+          }
+
           console.log("[webhook] checkout.session.completed: token activated via Redis", {
             token: subscriptionToken.slice(0, 8) + "...",
           });
@@ -177,23 +184,27 @@ export async function POST(request: NextRequest) {
 
     case "customer.subscription.deleted": {
       // Subscription cancelled or expired — revoke Pro access immediately.
-      // The proToken is stored in subscription_data.metadata at checkout creation.
+      // Primary: Redis reverse mapping (subscriptionId → token).
+      // Fallback: proToken in subscription metadata (legacy checkouts).
       const deletedSub = event.data.object;
-      const proToken = (deletedSub["metadata"] as Record<string, string> | undefined)?.["proToken"];
 
-      if (proToken) {
-        await cancelToken(proToken);
-        console.log("[webhook] customer.subscription.deleted — token cancelled", {
+      const tokenFromMapping = await getTokenForSubscription(deletedSub["id"] as string);
+      const tokenFromMetadata = (deletedSub["metadata"] as Record<string, string> | undefined)?.["proToken"];
+      const tokenToCancel = tokenFromMapping || tokenFromMetadata;
+
+      if (tokenToCancel) {
+        await cancelToken(tokenToCancel);
+        console.log("[webhook] customer.subscription.deleted — Pro token cancelled in Redis", {
           id: deletedSub["id"],
-          token: proToken.slice(0, 8) + "…",
+          token: tokenToCancel.slice(0, 8) + "…",
+          source: tokenFromMapping ? "redis-mapping" : "metadata",
         });
       } else {
-        // Pre-fix subscriptions don't have proToken in metadata.
-        // Token will expire at its natural 13-month TTL.
-        console.warn("[webhook] customer.subscription.deleted — no proToken in metadata", {
-          id: deletedSub["id"],
-          customer: deletedSub["customer"],
-        });
+        console.log(
+          "[webhook] customer.subscription.deleted — no token mapping found " +
+            "(pre-mapping checkout or Redis unavailable). Stripe API fallback handles revocation.",
+          { id: deletedSub["id"], customer: deletedSub["customer"] }
+        );
       }
       break;
     }
