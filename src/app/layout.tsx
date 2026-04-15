@@ -38,6 +38,13 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className="dark">
+      <head>
+        {/* Google Search Console verification — aiproductphotomaker.com (buildngrowsv@gmail.com) */}
+        <meta
+          name="google-site-verification"
+          content="EvH1LfFf_PO3s16leLnD-OJjSDYeGdXpvZlk_xT5ht8"
+        />
+      </head>
       <body className="font-sans antialiased bg-gray-950 text-white min-h-screen">
         {children}
       </body>
