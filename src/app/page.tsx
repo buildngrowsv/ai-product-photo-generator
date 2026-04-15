@@ -434,6 +434,24 @@ export default function PhotoForgeAILandingPage() {
             </div>
           </div>
 
+          {/* CTA buttons — explicit above-fold action pair for visitors arriving
+           * from search who need a clear next step. Primary scrolls to the upload
+           * demo, secondary links to pricing for comparison shoppers. */}
+          <div className="mb-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <a
+              href="#upload-demo"
+              className="inline-block bg-indigo-600 hover:bg-indigo-500 text-white px-8 py-4 rounded-xl text-lg font-semibold transition-all duration-300 hover:shadow-xl hover:shadow-indigo-500/30 hover:scale-[1.02]"
+            >
+              Create Product Photos — Free
+            </a>
+            <a
+              href="/pricing"
+              className="inline-block border border-indigo-500/30 text-indigo-400 hover:bg-indigo-500/10 px-6 py-4 rounded-xl text-lg font-medium transition-all duration-300"
+            >
+              View Pricing
+            </a>
+          </div>
+
           {isGenerationBlocked ? (
             <div className="max-w-3xl mx-auto mb-8 rounded-2xl border border-amber-500/30 bg-amber-500/10 px-6 py-5 text-left">
               <p className="text-sm font-semibold uppercase tracking-[0.2em] text-amber-300">
@@ -446,7 +464,7 @@ export default function PhotoForgeAILandingPage() {
           ) : null}
 
           {/* ============== INTERACTIVE UPLOAD DEMO (ON THE HERO) ============== */}
-          <div className="max-w-3xl mx-auto">
+          <div id="upload-demo" className="max-w-3xl mx-auto">
             {!uploadedImagePreviewUrl ? (
               /* Upload dropzone */
               <div
@@ -793,6 +811,81 @@ export default function PhotoForgeAILandingPage() {
           }),
         }}
       />
+
+      {/* ================================================================
+       * PRICING CTA SECTION
+       * ================================================================
+       * Server-rendered pricing summary so visitors who don't scroll
+       * through the tool section still see the value proposition.
+       * Two tiers matching product config: Free + Pro.
+       * ================================================================ */}
+      <section className="py-20 px-4 sm:px-6 bg-gray-950/50">
+        <div className="max-w-4xl mx-auto space-y-12">
+          <div className="text-center space-y-4">
+            <h2 className="text-3xl sm:text-4xl font-bold text-white">
+              Simple, Transparent Pricing
+            </h2>
+            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+              Start free — no account required. Upgrade for unlimited product photos.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+            {/* FREE TIER */}
+            <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-8 space-y-6">
+              <div>
+                <h3 className="text-xl font-semibold text-white">Free</h3>
+                <div className="mt-2">
+                  <span className="text-4xl font-bold text-white">$0</span>
+                  <span className="text-gray-500 ml-1">/month</span>
+                </div>
+              </div>
+              <ul className="space-y-3">
+                {["3 product photos per day", "All background styles", "High-resolution output", "No account required", "No watermarks"].map((f) => (
+                  <li key={f} className="flex items-start gap-2 text-gray-400 text-sm">
+                    <span className="text-green-400 mt-0.5 shrink-0">&#10003;</span>
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              <a
+                href="#tool"
+                className="block w-full text-center py-3 rounded-xl border border-white/10 text-gray-400 hover:text-white hover:border-indigo-500/40 transition-all duration-300 font-medium"
+              >
+                Try Free
+              </a>
+            </div>
+
+            {/* PRO TIER */}
+            <div className="relative rounded-2xl border-2 border-indigo-500/50 bg-white/[0.02] p-8 space-y-6 shadow-lg shadow-indigo-500/10">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-indigo-600 text-white text-xs font-bold px-3 py-1 rounded-full">
+                POPULAR
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold text-white">Pro</h3>
+                <div className="mt-2">
+                  <span className="text-4xl font-bold text-white">$11.99</span>
+                  <span className="text-gray-500 ml-1">/month</span>
+                </div>
+              </div>
+              <ul className="space-y-3">
+                {["Unlimited product photos", "4K resolution output", "Batch processing", "All background styles", "Priority processing", "Commercial use license", "Cancel anytime"].map((f) => (
+                  <li key={f} className="flex items-start gap-2 text-gray-400 text-sm">
+                    <span className="text-green-400 mt-0.5 shrink-0">&#10003;</span>
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              <a
+                href="/pricing"
+                className="block w-full text-center py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold transition-all duration-200 hover:scale-[1.02]"
+              >
+                Upgrade to Pro
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* ===================== FOOTER ===================== */}
       <footer className="py-12 px-4 border-t border-white/5">
