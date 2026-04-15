@@ -893,6 +893,40 @@ export default function PhotoForgeAILandingPage() {
         </div>
       </section>
 
+      {/* ===================== SECURITY & TRUST BADGES =====================
+       * Conversion-critical: e-commerce sellers uploading product images
+       * need reassurance about data handling before sharing proprietary
+       * product photos. Addresses top objections: privacy, retention,
+       * compliance.
+       * ================================================================ */}
+      <section className="py-16 px-4 border-t border-white/5">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-2xl font-bold text-white mb-8">Your Data, Protected</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="flex flex-col items-center gap-2 p-4 rounded-xl bg-white/[0.03]">
+              <span className="text-2xl">&#128274;</span>
+              <span className="text-sm font-medium text-white">256-bit Encryption</span>
+              <span className="text-xs text-gray-400">Bank-grade security</span>
+            </div>
+            <div className="flex flex-col items-center gap-2 p-4 rounded-xl bg-white/[0.03]">
+              <span className="text-2xl">&#128465;</span>
+              <span className="text-sm font-medium text-white">No Data Stored</span>
+              <span className="text-xs text-gray-400">Photos deleted after processing</span>
+            </div>
+            <div className="flex flex-col items-center gap-2 p-4 rounded-xl bg-white/[0.03]">
+              <span className="text-2xl">&#127919;</span>
+              <span className="text-sm font-medium text-white">GDPR Compliant</span>
+              <span className="text-xs text-gray-400">EU data protection</span>
+            </div>
+            <div className="flex flex-col items-center gap-2 p-4 rounded-xl bg-white/[0.03]">
+              <span className="text-2xl">&#9989;</span>
+              <span className="text-sm font-medium text-white">No Signup Required</span>
+              <span className="text-xs text-gray-400">Try free instantly</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ===================== FOOTER ===================== */}
       <footer className="py-12 px-4 border-t border-white/5">
         <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
