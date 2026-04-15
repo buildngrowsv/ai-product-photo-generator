@@ -16,6 +16,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { BreadcrumbJsonLd } from "@/components/BreadcrumbJsonLd";
+import { SeoCrossLinks } from "@/components/SeoCrossLinks";
+import { SeoInternalLinks } from "@/components/SeoInternalLinks";
 const SITE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://aiproductphotomaker.com";
 
 export const metadata: Metadata = {
@@ -85,6 +87,28 @@ export default function VsIndexPage() {
             { name: "Alternatives", url: `${process.env.NEXT_PUBLIC_APP_URL || ""}/vs` },
           ]}
         />
+
+      {/* ItemList JSON-LD — tells Google this is a structured collection page */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            name: metadata.title,
+            url: canonicalUrl,
+            mainEntity: {
+              "@type": "ItemList",
+              itemListElement: COMPARISONS.map((comp, index) => ({
+                "@type": "ListItem",
+                position: index + 1,
+                name: `vs ${comp.name}`,
+                url: `${SITE_URL}/vs/${comp.slug}`,
+              })),
+            },
+          }),
+        }}
+      />
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
           <Link href="/" className="flex items-center gap-2">
             <span className="text-2xl">📸</span>
@@ -139,6 +163,10 @@ export default function VsIndexPage() {
           ))}
         </div>
       </section>
+
+      {/* Cross-links and internal links for crawlability */}
+      <SeoCrossLinks currentCategory="vs" currentSlug="" />
+      <SeoInternalLinks />
 
       {/* ── Footer ── */}
       <footer className="border-t border-gray-800 py-8 text-center text-sm text-gray-500">
