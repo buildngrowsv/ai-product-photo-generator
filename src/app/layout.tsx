@@ -22,7 +22,7 @@
  * =============================================================================
  */
 import type { ReactNode } from "react";
-import type { Viewport } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const viewport: Viewport = {
@@ -33,6 +33,32 @@ export const viewport: Viewport = {
     { media: "(prefers-color-scheme: dark)", color: "#09090b" },
     { media: "(prefers-color-scheme: light)", color: "#7c3aed" },
   ],
+};
+
+/**
+ * Root-level metadata — ensures every page has a <title> and canonical in
+ * SSR HTML. The [locale]/layout.tsx generateMetadata overrides these for
+ * locale-routed pages, but pages served from root page.tsx need this.
+ *
+ * FIX (2026-04-15, Coordinator 1): Production curl showed no <title> tag.
+ */
+export const metadata: Metadata = {
+  metadataBase: new URL("https://aiproductphotomaker.com"),
+  title: "AI Product Photo Generator — Professional Product Photos with AI | PhotoForge",
+  description:
+    "Generate stunning product photos instantly with AI. Upload your product, pick a background style, and get professional e-commerce photos in seconds. Free to try.",
+  alternates: {
+    canonical: "https://aiproductphotomaker.com",
+  },
+  openGraph: {
+    title: "AI Product Photo Generator — Professional Product Photos with AI",
+    description:
+      "Generate stunning product photos instantly with AI. Free to try — no sign-up required.",
+    type: "website",
+    url: "https://aiproductphotomaker.com",
+    siteName: "PhotoForge AI",
+  },
+  robots: { index: true, follow: true },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
