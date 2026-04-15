@@ -192,58 +192,7 @@ const jsonLdHowTo = {
   ],
 };
 
-/**
- * FAQPage JSON-LD — enables Google FAQ rich snippets (expandable Q&A in SERP).
- * Placed in root layout because Next.js RSC streaming does not reliably flush
- * page-level <script> tags into the initial SSR HTML that Googlebot reads.
- * FAQ rich results increase SERP real estate and click-through rate.
- */
-const jsonLdFaqPage = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  mainEntity: [
-    {
-      "@type": "Question",
-      name: "What is an AI product photo generator?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "An AI product photo generator is a web tool that uses deep-learning models to create professional e-commerce product photos from simple smartphone snapshots. Upload a product image, choose a background style, and the AI generates studio-quality photos — no photography skills or expensive equipment required.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "How does AI product photography work?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Our AI analyzes your product image, removes the original background, and places the product on your chosen scene — pure white (Amazon-compliant), lifestyle settings, gradient studio backdrops, or seasonal themes. The model handles relighting, shadow generation, and color correction automatically.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "Is the AI product photo maker free?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Yes — PhotoForge AI offers free daily generations with no sign-up required. Power users can upgrade to a paid plan for higher resolution output, more generations per day, and batch processing for large catalogs.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "What types of product photos can I create?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "You can create white-background e-commerce shots (Amazon, Shopify, Etsy compliant), lifestyle scene compositions, gradient studio backdrops, seasonal campaign photos, and social media-optimized images. Works with any physical product — electronics, fashion, food, jewelry, cosmetics, and more.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "Can I use AI-generated product photos for my online store?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Absolutely — the photos are optimized for e-commerce platforms including Amazon, Shopify, Etsy, eBay, and WooCommerce. Paid plan users get high-resolution output and a commercial use license. Many sellers use PhotoForge AI to create consistent, professional product listings without hiring a photographer.",
-      },
-    },
-  ],
-};
+/* FAQPage JSON-LD removed — page-level components provide page-specific FAQs. Layout-level FAQPage duplicates with every page. */
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
@@ -261,10 +210,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdWebSite) }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdFaqPage) }}
         />
       </head>
       <body className="font-sans antialiased bg-gray-950 text-white min-h-screen">
