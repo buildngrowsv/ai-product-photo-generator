@@ -28,6 +28,50 @@ export const metadata: Metadata = {
 };
 
 /**
+ * FAQPage JSON-LD — mirrors the FAQ section rendered in PricingClient.tsx.
+ * Enables Google's FAQ rich result in organic search, increasing CTR for
+ * "[product] pricing" and "cancel anytime" intent queries.
+ */
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    {
+      "@type": "Question",
+      name: "Can I cancel anytime?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Yes. Cancel from your Stripe billing portal with one click. No lock-in, no questions.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Is the output commercial-use ready?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Yes. Pro images include a full commercial license — use them on Amazon, Shopify, ads, anywhere.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "What types of products work best?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Any physical product — apparel, electronics, food packaging, jewelry, cosmetics. Clean source photos get the best results.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Is my payment secure?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Yes. Checkout is handled entirely by Stripe — your card details never touch our servers.",
+      },
+    },
+  ],
+};
+
+/**
  * SoftwareApplication + Offer JSON-LD — enables Google rich snippets showing
  * price and application category in search results for "[product] pricing" queries.
  */
@@ -65,6 +109,10 @@ export default function PricingPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(pricingJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
       <PricingClient initialFalConfigured={Boolean(process.env.FAL_KEY)} />
     </>

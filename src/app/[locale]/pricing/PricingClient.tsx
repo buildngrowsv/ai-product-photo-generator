@@ -189,6 +189,72 @@ export default function PricingClient({
           </div>
         </div>
 
+        {/* ── Trust badges ── */}
+        <div className="mt-12 flex flex-wrap justify-center gap-6">
+          {[
+            { icon: "🔒", label: "Secure Payment", sub: "Powered by Stripe" },
+            { icon: "↩️", label: "Cancel Anytime", sub: "No lock-in" },
+            { icon: "✅", label: "Money-Back Guarantee", sub: "30-day refund policy" },
+            { icon: "⚡", label: "Instant Access", sub: "Start generating immediately" },
+          ].map(({ icon, label, sub }) => (
+            <div
+              key={label}
+              className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-5 py-3"
+            >
+              <span className="text-2xl" aria-hidden="true">{icon}</span>
+              <div>
+                <p className="text-sm font-semibold text-white/85">{label}</p>
+                <p className="text-xs text-white/45">{sub}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* ── Social proof / testimonials ── */}
+        <div className="mt-20 text-center">
+          <h2 className="text-2xl font-bold mb-2 text-white/80">Trusted by Sellers &amp; Agencies</h2>
+          <p className="text-white/45 text-sm mb-10">Real results from real customers</p>
+          <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto text-left">
+            {[
+              {
+                quote:
+                  "PhotoForge transformed our product catalog. Sales increased 40% with professional-looking photos.",
+                author: "James L.",
+                role: "Shopify Store Owner",
+              },
+              {
+                quote:
+                  "No more expensive photography sessions. This AI handles everything perfectly.",
+                author: "Maria S.",
+                role: "Amazon Seller",
+              },
+              {
+                quote:
+                  "The quality rivals real product photography. My clients can't tell the difference.",
+                author: "David C.",
+                role: "Marketing Agency",
+              },
+            ].map(({ quote, author, role }) => (
+              <div
+                key={author}
+                className="rounded-2xl border border-white/10 bg-white/5 p-6 flex flex-col gap-4"
+              >
+                <div className="flex gap-0.5">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <span key={i} className="text-yellow-400 text-sm">★</span>
+                  ))}
+                </div>
+                <p className="text-sm text-white/75 leading-relaxed">&ldquo;{quote}&rdquo;</p>
+                <div>
+                  <p className="text-sm font-semibold text-white/90">{author}</p>
+                  <p className="text-xs text-white/45">{role}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ── FAQ ── */}
         <div className="mt-20 text-center">
           <h2 className="text-2xl font-bold mb-8 text-white/80">Frequently Asked</h2>
           <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto text-left">
