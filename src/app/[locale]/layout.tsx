@@ -146,6 +146,43 @@ const jsonLdFaqData = {
 };
 
 /**
+ * HowTo JSON-LD — targets "how to create product photos with AI" queries.
+ * Google displays step-by-step rich snippets; AI engines cite steps directly.
+ */
+const jsonLdHowTo = {
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  name: "How to Create Professional Product Photos with AI",
+  description:
+    "Generate studio-quality product photos in 3 easy steps using PhotoForge AI — free, no photography equipment needed.",
+  totalTime: "PT30S",
+  tool: {
+    "@type": "HowToTool",
+    name: "PhotoForge AI (photoforgepro.com)",
+  },
+  step: [
+    {
+      "@type": "HowToStep",
+      position: 1,
+      name: "Upload your product image",
+      text: "Upload any product photo taken with a smartphone or camera. No professional equipment needed — PhotoForge AI handles background removal, relighting, and shadow generation automatically.",
+    },
+    {
+      "@type": "HowToStep",
+      position: 2,
+      name: "Choose a background scene",
+      text: "Select from dozens of backgrounds: pure white (Amazon-compliant), lifestyle scenes, gradient studio backdrops, seasonal themes, or custom colors. The AI adjusts lighting and shadows to match each scene naturally.",
+    },
+    {
+      "@type": "HowToStep",
+      position: 3,
+      name: "Download your professional photo",
+      text: "Download the studio-quality product image ready for Amazon, Shopify, Etsy, or any marketplace. Pro plans enable batch processing for large catalogs and A/B testing multiple backgrounds.",
+    },
+  ],
+};
+
+/**
  * generateStaticParams — pre-renders both locales at build time.
  *
  * Required for static hosting (Vercel) so that /es path is generated as a
@@ -270,6 +307,11 @@ export default async function LocaleLayout({
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdFaqData) }}
+      />
+      {/* HowTo schema — step-by-step rich snippets for "how to create product photos" */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdHowTo) }}
       />
       {/* GA4 with consent mode — GoogleAnalyticsLoader reads env var internally */}
       <GoogleAnalyticsLoader />
