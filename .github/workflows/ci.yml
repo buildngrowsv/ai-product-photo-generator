@@ -1,57 +1,44 @@
-##
-# ci.yml — Continuous Integration for PhotoForge AI (ai-product-photo-generator)
+# DEPRECATED 2026-04-19 — DO NOT RE-ENABLE
 #
-# WHAT THIS DOES:
-# On every push to main and every pull request, this workflow:
-#   1. Installs dependencies
-#   2. Runs TypeScript type-check (catches import errors, type mismatches)
-#   3. Runs the Vitest unit/integration test suite
-#   4. Runs `next build` to ensure the production build never breaks
+# This workflow is intentionally a no-op. The repo `buildngrowsv/ai-product-photo-generator` runs builds
+# and deploys from a developer/operator Mac only, effective 2026-04-19
+# (Operator amendment).
 #
-# WHY CI (not just local testing):
-# Per deploy-readiness-checklist.md: "Add CI/CD that runs build on every push."
-# Local builds work but CI catches issues on fresh environments where env vars
-# are absent — the exact condition of Vercel's build environment.
+# Background:
+#   The 2026-04-18 Vercel $743 build-minutes incident (5,667 deploys,
+#   35% failure rate) triggered the original ban on hosting-platform
+#   builds. The 2026-04-19 Operator amendment extended that ban to
+#   GitHub Actions for the same reasons (vendor-managed compute,
+#   secret blast radius, silent on-push side effects, and the swarm
+#   doesn't need it — local builds + artifact uploads are the canon).
 #
-# ENVIRONMENT:
-# No real API keys are provided in CI. Tests are written to handle missing
-# FAL_KEY/STRIPE_SECRET_KEY gracefully so they pass in this environment.
+# Canonical rules (read first if you are an agent thinking about
+# adding a workflow back):
+#   - UserRoot/.claude/rules/no-github-actions-build-discipline.md
+#   - UserRoot/.claude/rules/local-only-builds-no-github-actions.md
+#   - UserRoot/.claude/rules/no-platform-build-billing-discipline.md
 #
-# BADGE (add to README):
-# ![CI](https://github.com/buildngrowsv/ai-product-photo-generator/actions/workflows/ci.yml/badge.svg)
-##
+# What to run instead:
+#   See the repo's DEPLOY-LOCAL-ONLY.md (or, if absent, the canonical
+#   one at Github/symplyai-platform/DEPLOY-LOCAL-ONLY.md).
+#
+# Trigger model:
+#   `workflow_dispatch:` ONLY. push / pull_request events do NOT
+#   trigger this workflow. If a human or agent manually fires it from
+#   the GH UI, the single `refuse` job exits 1.
 
-name: CI
+name: CI (DEPRECATED — local-only)
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+  workflow_dispatch:
 
 jobs:
-  build-and-test:
-    name: Build & Test
+  refuse:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-
-      - name: Setup Node.js 20
-        uses: actions/setup-node@v6
-        with:
-          node-version: "20"
-          cache: "npm"
-
-      - name: Install dependencies
-        run: npm ci --legacy-peer-deps
-
-      - name: TypeScript type check
-        run: npx tsc --noEmit
-
-      - name: Run unit tests
-        run: npm test
-
-      - name: Production build
-        run: npm run build
+      - name: Refuse to run build/test/deploy in CI
+        run: |
+          echo "::error::Build/test/deploy are local-only for buildngrowsv/ai-product-photo-generator (effective 2026-04-19)."
+          echo "::error::See DEPLOY-LOCAL-ONLY.md in this repo (or the platform-canonical one)."
+          echo "::error::Rule: UserRoot/.claude/rules/no-github-actions-build-discipline.md"
+          exit 1
